@@ -1,186 +1,107 @@
-<!DOCTYPE html>
+Ôªø<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card·pio Digital</title>
+    <title>Card√°pio Digital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6; color: #1f2937; }
-        .header { background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 10; }
-        .header-content { display: flex; justify-content: space-between; align-items: center; padding: 1rem; max-width: 1280px; margin: 0 auto; }
-        .logo { font-size: 1.5rem; font-weight: bold; color: #dc2626; }
-        .cart-button { background-color: #dc2626; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; }
-        .categories-tabs { background-color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: sticky; top: 73px; z-index: 10; overflow-x: auto; }
-        .tabs-container { display: flex; gap: 1rem; padding: 0.75rem 1rem; max-width: 1280px; margin: 0 auto; }
-        .tab-button { padding: 0.5rem 1rem; border-radius: 9999px; border: none; cursor: pointer; white-space: nowrap; }
-        .tab-button-active { background-color: #dc2626; color: white; }
-        .tab-button-inactive { background-color: #e5e7eb; color: #4b5563; }
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 2rem 1rem; max-width: 1280px; margin: 0 auto; }
-        .product-card { background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
-        .product-info { padding: 1rem; }
-        .product-name { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .product-description { color: #6b7280; margin-bottom: 1rem; font-size: 0.875rem; }
-        .product-footer { display: flex; justify-content: space-between; align-items: center; }
-        .product-price { font-size: 1.5rem; font-weight: bold; color: #dc2626; }
-        .add-button { background-color: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; }
-        .loading, .empty-state { text-align: center; padding: 3rem; color: #6b7280; }
-        .cart-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); z-index: 50; display: flex; justify-content: flex-end; }
-        .cart-sidebar { width: 100%; max-width: 28rem; background-color: white; height: 100%; display: flex; flex-direction: column; }
-        .cart-header { padding: 1rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
-        .cart-items { flex: 1; overflow-y: auto; padding: 1rem; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb; }
-        .cart-item-info { flex: 1; }
-        .cart-item-name { font-weight: 600; }
-        .cart-item-price { color: #6b7280; font-size: 0.875rem; }
-        .cart-item-quantity { display: flex; align-items: center; gap: 0.5rem; }
-        .quantity-btn { background-color: #e5e7eb; border: none; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer; }
-        .remove-btn { background: none; border: none; color: #dc2626; cursor: pointer; margin-left: 1rem; }
-        .cart-footer { border-top: 1px solid #e5e7eb; padding: 1rem; }
-        .cart-total { display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: bold; }
-        .total-amount { color: #dc2626; }
-        .checkout-button { width: 100%; background-color: #dc2626; color: white; padding: 0.75rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: 600; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-        .form-group input, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; }
-        .hidden { display: none; }
-        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 1rem; z-index: 100; max-width: 90%; text-align: center; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99; }
+        body { font-family: Arial, sans-serif; background: #f3f4f6; }
+        .header { background: white; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #dc2626; font-size: 1.5rem; }
+        .cart-btn { background: #dc2626; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; }
+        .products { max-width: 1200px; margin: 20px auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 0 20px; }
+        .product-card { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .product-name { font-size: 1.2rem; font-weight: bold; }
+        .product-price { color: #dc2626; font-size: 1.3rem; font-weight: bold; margin-top: 10px; }
+        .add-btn { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        .cart-modal { display: none; position: fixed; top: 0; right: 0; width: 100%; max-width: 400px; height: 100%; background: white; box-shadow: -2px 0 5px rgba(0,0,0,0.2); z-index: 1000; }
+        .cart-header { padding: 15px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; }
+        .cart-items { padding: 15px; max-height: 60%; overflow-y: auto; }
+        .cart-footer { padding: 15px; border-top: 1px solid #ddd; position: absolute; bottom: 0; width: 100%; background: white; }
+        .checkout-btn { background: #dc2626; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .loading { text-align: center; padding: 50px; }
     </style>
 </head>
 <body>
-    <div id="app">
-        <header class="header">
-            <div class="header-content">
-                <h1 class="logo">?? Card·pio Digital</h1>
-                <button class="cart-button" onclick="toggleCart()">?? Carrinho (<span id="cartCount">0</span>)</button>
-            </div>
-        </header>
-
-        <div class="categories-tabs">
-            <div class="tabs-container" id="tabsList">
-                <button class="tab-button tab-button-active" onclick="filterByCategory(null)">Todos</button>
-            </div>
+    <div class="header">
+        <div class="header-content">
+            <h1 class="logo">üçî Card√°pio Digital</h1>
+            <button class="cart-btn" onclick="openCart()">üõí Carrinho (<span id="cartCount">0</span>)</button>
         </div>
+    </div>
+    <div id="productsContainer" class="products">
+        <div class="loading">Carregando card√°pio...</div>
+    </div>
 
-        <main>
-            <div class="products-grid" id="productsGrid">
-                <div class="loading">Carregando...</div>
+    <div class="overlay" id="overlay" onclick="closeCart()"></div>
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-header">
+            <h3>Seu Pedido</h3>
+            <button onclick="closeCart()" style="background:none;border:none;font-size:1.5rem;">&times;</button>
+        </div>
+        <div id="cartItems" class="cart-items"></div>
+        <div class="cart-footer">
+            <div style="margin-bottom:15px;"><strong>Total: R$ <span id="cartTotal">0.00</span></strong></div>
+            <div><input type="text" id="customerName" placeholder="Seu nome" required></div>
+            <div><input type="text" id="customerPhone" placeholder="WhatsApp" required></div>
+            <div>
+                <select id="deliveryType">
+                    <option value="pickup">Retirada no balc√£o</option>
+                    <option value="delivery">Delivery</option>
+                </select>
             </div>
-        </main>
-
-        <div id="cartSidebar" class="cart-overlay hidden" onclick="toggleCart()">
-            <div class="cart-sidebar" onclick="event.stopPropagation()">
-                <div class="cart-header">
-                    <h2>Finalizar Pedido</h2>
-                    <button class="close-cart" onclick="toggleCart()">?</button>
-                </div>
-                <div class="cart-items" id="cartItems"></div>
-                <div class="cart-footer" id="cartFooter" style="display:none">
-                    <div class="form-group">
-                        <label>Seu nome *</label>
-                        <input type="text" id="customerName" placeholder="Digite seu nome">
-                    </div>
-                    <div class="form-group">
-                        <label>WhatsApp *</label>
-                        <input type="tel" id="customerPhone" placeholder="(11) 99999-9999">
-                    </div>
-                    <div class="form-group">
-                        <label>EndereÁo (opcional)</label>
-                        <input type="text" id="customerAddress" placeholder="Rua, n˙mero, bairro">
-                    </div>
-                    <div class="cart-total">
-                        <span>Total:</span>
-                        <span class="total-amount" id="cartTotal">R$ 0,00</span>
-                    </div>
-                    <button class="checkout-button" onclick="submitOrder()">Confirmar Pedido</button>
-                </div>
-            </div>
+            <div id="addressField" style="display:none;"><input type="text" id="customerAddress" placeholder="Endere√ßo completo"></div>
+            <button class="checkout-btn" onclick="submitOrder()">Confirmar Pedido</button>
         </div>
     </div>
 
     <script>
-        let categories = [];
         let products = [];
         let cart = [];
-        let selectedCategory = null;
+        let tenantId = null;
 
-        // IMPORTANTE: Coloque o ID da sua loja aqui
-        const urlParams = new URLSearchParams(window.location.search); const TENANT_ID = urlParams.get("tenant") || "cmokd943b0000r86pi8pw54st";;
-        const API_URL = "";
+        const urlParams = new URLSearchParams(window.location.search);
+        tenantId = urlParams.get('tenant');
+        if (!tenantId) {
+            tenantId = localStorage.getItem('tenantId');
+        }
 
-        async function loadCardapio() {
+        async function loadProducts() {
             try {
-                const response = await fetch(`${API_URL}/cardapio/categories/${TENANT_ID}`);
-                categories = await response.json();
-                products = categories.flatMap(cat => cat.products.filter(p => p.isAvailable && p.stock > 0));
-                renderCategories();
+                const res = await fetch(`/cardapio/products/${tenantId}`);
+                products = await res.json();
                 renderProducts();
-            } catch (error) {
-                document.getElementById('productsGrid').innerHTML = '<div class="empty-state">Erro ao carregar card·pio</div>';
+            } catch (err) {
+                document.getElementById('productsContainer').innerHTML = '<div class="loading">Erro ao carregar card√°pio</div>';
             }
-        }
-
-        function renderCategories() {
-            const tabsList = document.getElementById('tabsList');
-            tabsList.innerHTML = '<button class="tab-button tab-button-active" onclick="filterByCategory(null)">Todos</button>';
-            categories.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = `tab-button ${selectedCategory === cat.id ? 'tab-button-active' : 'tab-button-inactive'}`;
-                btn.textContent = cat.name;
-                btn.onclick = () => filterByCategory(cat.id);
-                tabsList.appendChild(btn);
-            });
-        }
-
-        function filterByCategory(categoryId) {
-            selectedCategory = categoryId;
-            renderCategories();
-            renderProducts();
         }
 
         function renderProducts() {
-            const grid = document.getElementById('productsGrid');
-            let filteredProducts = products;
-            if (selectedCategory) {
-                filteredProducts = products.filter(p => p.categoryId === selectedCategory);
-            }
-            if (filteredProducts.length === 0) {
-                grid.innerHTML = '<div class="empty-state">Nenhum produto disponÌvel</div>';
+            const container = document.getElementById('productsContainer');
+            if (!products || products.length === 0) {
+                container.innerHTML = '<div class="loading">Nenhum produto dispon√≠vel</div>';
                 return;
             }
-            grid.innerHTML = filteredProducts.map(product => `
+            container.innerHTML = products.map(p => `
                 <div class="product-card">
-                    <div class="product-info">
-                        <h3 class="product-name">${product.name}</h3>
-                        <p class="product-description">${product.description || ''}</p>
-                        <div class="product-footer">
-                            <span class="product-price">R$ ${product.price.toFixed(2)}</span>
-                            <button class="add-button" onclick="addToCart('${product.id}')">Adicionar</button>
-                        </div>
-                    </div>
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-description" style="color:#666;font-size:0.9rem;">${p.description || ''}</div>
+                    <div class="product-price">R$ ${p.price.toFixed(2)}</div>
+                    <button class="add-btn" onclick="addToCart('${p.id}','${p.name}',${p.price})">Adicionar</button>
                 </div>
             `).join('');
         }
 
-        function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            const existing = cart.find(item => item.id === productId);
+        function addToCart(id, name, price) {
+            const existing = cart.find(i => i.id === id);
             if (existing) {
                 existing.quantity++;
             } else {
-                cart.push({ ...product, quantity: 1 });
-            }
-            updateCartUI();
-        }
-
-        function updateQuantity(productId, delta) {
-            const item = cart.find(i => i.id === productId);
-            if (item) {
-                item.quantity += delta;
-                if (item.quantity <= 0) {
-                    cart = cart.filter(i => i.id !== productId);
-                }
+                cart.push({ id, name, price, quantity: 1 });
             }
             updateCartUI();
         }
@@ -188,128 +109,90 @@
         function updateCartUI() {
             const count = cart.reduce((s, i) => s + i.quantity, 0);
             const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-            document.getElementById('cartCount').textContent = count;
-            document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2)}`;
+            document.getElementById('cartCount').innerText = count;
+            document.getElementById('cartTotal').innerText = total.toFixed(2);
             
             const itemsDiv = document.getElementById('cartItems');
-            const footer = document.getElementById('cartFooter');
-            
             if (cart.length === 0) {
-                itemsDiv.innerHTML = '<div class="empty-state">Carrinho vazio</div>';
-                footer.style.display = 'none';
+                itemsDiv.innerHTML = '<div style="text-align:center;color:#999;">Carrinho vazio</div>';
             } else {
                 itemsDiv.innerHTML = cart.map(item => `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-price">R$ ${item.price.toFixed(2)}</div>
-                        </div>
-                        <div class="cart-item-quantity">
-                            <button class="quantity-btn" onclick="updateQuantity('${item.id}', -1)">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="quantity-btn" onclick="updateQuantity('${item.id}', 1)">+</button>
-                            <button class="remove-btn" onclick="removeFromCart('${item.id}')">???</button>
-                        </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:5px;">
+                        <div>${item.name} x${item.quantity}</div>
+                        <div>R$ ${(item.price * item.quantity).toFixed(2)}</div>
                     </div>
                 `).join('');
-                footer.style.display = 'block';
             }
         }
 
-        function removeFromCart(productId) {
-            cart = cart.filter(i => i.id !== productId);
-            updateCartUI();
+        function openCart() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('cartModal').style.display = 'block';
         }
 
-        function toggleCart() {
-            const sidebar = document.getElementById('cartSidebar');
-            sidebar.classList.toggle('hidden');
+        function closeCart() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('cartModal').style.display = 'none';
         }
+
+        document.getElementById('deliveryType').addEventListener('change', function() {
+            const show = this.value === 'delivery';
+            document.getElementById('addressField').style.display = show ? 'block' : 'none';
+        });
 
         async function submitOrder() {
             const name = document.getElementById('customerName').value;
             const phone = document.getElementById('customerPhone').value;
+            const deliveryType = document.getElementById('deliveryType').value;
             const address = document.getElementById('customerAddress').value;
             
             if (!name || !phone) {
-                alert('Preencha nome e telefone!');
+                alert('Preencha seu nome e telefone');
                 return;
             }
             
-            const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            if (deliveryType === 'delivery' && !address) {
+                alert('Preencha o endere√ßo para entrega');
+                return;
+            }
             
             const orderData = {
                 customerName: name,
                 customerPhone: phone,
-                customerAddress: address || null,
-                deliveryType: address ? 'delivery' : 'pickup',
+                deliveryType: deliveryType,
                 deliveryFee: 0,
                 items: cart.map(item => ({
                     productId: item.id,
                     quantity: item.quantity
                 })),
-                tenantId: TENANT_ID
+                tenantId: tenantId
             };
             
+            if (deliveryType === 'delivery') {
+                orderData.customerAddress = address;
+            }
+            
             try {
-                // Criar pedido
-                const orderRes = await fetch(`${API_URL}/pedidos`, {
+                const response = await fetch('/pedidos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
-                
-                const order = await orderRes.json();
-                
-                if (!orderRes.ok) {
-                    alert('Erro: ' + (order.message || 'Falha ao criar pedido'));
-                    return;
-                }
-                
-                // Gerar PIX
-                const pixRes = await fetch(`${API_URL}/pagamentos/pix/${order.id}?tenantId=${TENANT_ID}`, {
-                    method: 'POST'
-                });
-                
-                const pixData = await pixRes.json();
-                
-                if (pixRes.ok && pixData.qrCodeImage) {
-                    // Abrir janela com QR Code
-                    const win = window.open();
-                    win.document.write(`
-                        <html>
-                            <head><title>Pagar com PIX</title></head>
-                            <body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:Arial;padding:20px;">
-                                <h2>?? Pagamento PIX</h2>
-                                <img src="${pixData.qrCodeImage}" style="max-width:300px;margin:20px;">
-                                <p><strong>Pedido: ${order.id.substring(0,8)}</strong></p>
-                                <p><strong>Valor: R$ ${total.toFixed(2)}</strong></p>
-                                <p>Escaneie o QR Code no seu banco</p>
-                                <p style="font-size:12px;color:#666;">ApÛs o pagamento, o pedido ser· confirmado automaticamente</p>
-                                <button onclick="window.close()" style="margin-top:20px;padding:10px 20px;">Fechar</button>
-                            </body>
-                        </html>
-                    `);
+                const result = await response.json();
+                if (response.ok) {
+                    alert(`Pedido #${result.id.substring(0,8)} criado com sucesso!\nTotal: R$ ${result.total.toFixed(2)}`);
+                    cart = [];
+                    updateCartUI();
+                    closeCart();
                 } else {
-                    alert(`? Pedido #${order.id.substring(0,8)} criado!\nTotal: R$ ${total.toFixed(2)}\n\nEm breve vocÍ receber· o link de pagamento.`);
+                    alert('Erro: ' + (result.message || 'Falha ao criar pedido'));
                 }
-                
-                // Limpar carrinho e fechar
-                cart = [];
-                updateCartUI();
-                toggleCart();
-                
-                // Limpar formul·rio
-                document.getElementById('customerName').value = '';
-                document.getElementById('customerPhone').value = '';
-                document.getElementById('customerAddress').value = '';
-                
-            } catch (error) {
-                alert('Erro: ' + error.message);
+            } catch (err) {
+                alert('Erro ao enviar pedido: ' + err.message);
             }
         }
 
-        loadCardapio();
+        loadProducts();
     </script>
 </body>
 </html>
