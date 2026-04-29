@@ -1,9 +1,9 @@
-Ôªø<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Card√°pio Digital</title>
+    <title>Login - Card·pio Digital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -45,7 +45,7 @@
 <body>
     <div class="container">
         <div class="card">
-            <h1>üîê Login</h1>
+            <h1>?? Login</h1>
             <form id="loginForm">
                 <input type="email" id="email" placeholder="E-mail" required>
                 <input type="password" id="password" placeholder="Senha" required>
@@ -53,12 +53,12 @@
             </form>
             <div id="message" class="message"></div>
             <p style="text-align: center; margin-top: 20px;">
-                <a href="/signup/">N√£o tem uma loja? Cadastre-se</a>
+                <a href="/signup/">N„o tem uma loja? Cadastre-se</a>
             </p>
         </div>
     </div>
     <script>
-        const API_URL = "http://localhost:3000";
+        const API_URL = "";
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const msg = document.getElementById('message');
@@ -87,7 +87,7 @@
                 }
             } catch (error) {
                 msg.className = 'message error';
-                msg.textContent = 'Erro de conex√£o';
+                msg.textContent = 'Erro de conex„o';
             }
         });
     </script>

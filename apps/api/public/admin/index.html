@@ -1,9 +1,9 @@
-Ôªø<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin - Card√°pio Digital</title>
+    <title>Painel Admin - Card·pio Digital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -109,8 +109,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>üçî Card√°pio Digital - Admin</h1>
-            <a href="#" id="linkCardapio" class="link-cardapio" target="_blank">üîó Ver Card√°pio</a>
+            <h1>?? Card·pio Digital - Admin</h1>
+            <a href="#" id="linkCardapio" class="link-cardapio" target="_blank">?? Ver Card·pio</a>
         </div>
 
         <div class="stats">
@@ -120,15 +120,15 @@
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="showTab('pedidos')">üìã Pedidos</button>
-            <button class="tab" onclick="showTab('produtos')">üçï Produtos</button>
-            <button class="tab" onclick="showTab('categorias')">üìÅ Categorias</button>
+            <button class="tab active" onclick="showTab('pedidos')">?? Pedidos</button>
+            <button class="tab" onclick="showTab('produtos')">?? Produtos</button>
+            <button class="tab" onclick="showTab('categorias')">?? Categorias</button>
         </div>
 
         <div id="tabPedidos" class="panel active">
             <div style="overflow-x: auto;">
                 <table>
-                    <thead><tr><th>ID</th><th>Cliente</th><th>Total</th><th>Status</th><th>A√ß√£o</th></tr></thead>
+                    <thead><tr><th>ID</th><th>Cliente</th><th>Total</th><th>Status</th><th>AÁ„o</th></tr></thead>
                     <tbody id="listaPedidos"></tbody>
                 </table>
             </div>
@@ -138,7 +138,7 @@
             <button class="btn" onclick="abrirModalProduto()">+ Novo Produto</button>
             <div style="overflow-x: auto; margin-top: 15px;">
                 <table>
-                    <thead><tr><th>Nome</th><th>Pre√ßo</th><th>Estoque</th><th>A√ß√µes</th></tr></thead>
+                    <thead><tr><th>Nome</th><th>PreÁo</th><th>Estoque</th><th>AÁıes</th></tr></thead>
                     <tbody id="listaProdutos"></tbody>
                 </table>
             </div>
@@ -148,7 +148,7 @@
             <button class="btn" onclick="abrirModalCategoria()">+ Nova Categoria</button>
             <div style="overflow-x: auto; margin-top: 15px;">
                 <table>
-                    <thead><tr><th>Nome</th><th>Ordem</th><th>A√ß√µes</th></tr></thead>
+                    <thead><tr><th>Nome</th><th>Ordem</th><th>AÁıes</th></tr></thead>
                     <tbody id="listaCategorias"></tbody>
                 </table>
             </div>
@@ -161,8 +161,8 @@
             <h3 id="modalProdutoTitulo">Novo Produto</h3>
             <input type="hidden" id="produtoId">
             <div class="form-group"><label>Nome</label><input type="text" id="produtoNome" required></div>
-            <div class="form-group"><label>Descri√ß√£o</label><textarea id="produtoDescricao"></textarea></div>
-            <div class="form-group"><label>Pre√ßo</label><input type="number" id="produtoPreco" step="0.01" required></div>
+            <div class="form-group"><label>DescriÁ„o</label><textarea id="produtoDescricao"></textarea></div>
+            <div class="form-group"><label>PreÁo</label><input type="number" id="produtoPreco" step="0.01" required></div>
             <div class="form-group"><label>Categoria</label><select id="produtoCategoriaId"></select></div>
             <div class="form-group"><label>Estoque</label><input type="number" id="produtoEstoque" value="0"></div>
             <button class="btn" onclick="salvarProduto()">Salvar</button>
@@ -183,11 +183,11 @@
     </div>
 
     <script>
-        const API_URL = "http://localhost:3000";
+        const API_URL = "";
         const urlParams = new URLSearchParams(window.location.search);
         const TENANT_ID = urlParams.get('tenant') || localStorage.getItem('tenantId');
 
-        // Carregar link do card√°pio
+        // Carregar link do card·pio
         const linkCardapio = `${window.location.protocol}//${window.location.host}/cardapio.html?tenant=${TENANT_ID}`;
         document.getElementById('linkCardapio').href = linkCardapio;
 
@@ -241,7 +241,7 @@
                 } else {
                     alert('Erro ao atualizar status');
                 }
-            } catch(e) { alert('Erro de conex√£o'); }
+            } catch(e) { alert('Erro de conex„o'); }
         }
 
         async function loadProdutos() {

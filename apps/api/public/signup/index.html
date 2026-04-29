@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastre sua Loja - Cardápio Digital</title>
+    <title>Cadastre sua Loja - Card�pio Digital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -82,19 +82,19 @@
 <body>
     <div class="container">
         <div class="card">
-            <h1>🍔 Cadastre sua Loja</h1>
+            <h1>?? Cadastre sua Loja</h1>
             <p class="subtitle">Comece a vender online em minutos</p>
 
             <form id="signupForm">
                 <div class="form-group">
                     <label>Nome da Loja *</label>
-                    <input type="text" id="name" placeholder="Ex: Hamburgueria do João" required>
+                    <input type="text" id="name" placeholder="Ex: Hamburgueria do Jo�o" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Subdomínio *</label>
+                    <label>Subdom�nio *</label>
                     <input type="text" id="subdomain" placeholder="hamburguerjoao" required>
-                    <div class="preview">🔗 Seu cardápio: <span id="preview">hamburguerjoao</span>.seudominio.com</div>
+                    <div class="preview">?? Seu card�pio: <span id="preview">hamburguerjoao</span>.seudominio.com</div>
                 </div>
 
                 <div class="form-group">
@@ -109,7 +109,7 @@
 
                 <div class="form-group">
                     <label>Senha *</label>
-                    <input type="password" id="password" placeholder="Mínimo 6 caracteres" required>
+                    <input type="password" id="password" placeholder="M�nimo 6 caracteres" required>
                 </div>
 
                 <button type="submit" class="btn" id="submitBtn">Criar Minha Loja</button>
@@ -117,15 +117,15 @@
 
             <div id="message" class="message"></div>
             <div class="link">
-                <a href="/login/">Já tenho uma loja →</a>
+                <a href="/login/">J� tenho uma loja ?</a>
             </div>
         </div>
     </div>
 
     <script>
-        const API_URL = "http://localhost:3000";
+        const API_URL = "";
 
-        // Preview do subdomínio
+        // Preview do subdom�nio
         document.getElementById('subdomain').addEventListener('input', function(e) {
             let value = e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '');
             e.target.value = value;
@@ -173,10 +173,10 @@
                 if (response.ok) {
                     messageDiv.className = 'message success';
                     messageDiv.innerHTML = `
-                        ✅ <strong>Loja criada com sucesso!</strong><br><br>
-                        📋 ID: ${result.tenant.id}<br>
-                        🌐 Subdomínio: ${result.tenant.subdomain}.seudominio.com<br>
-                        📧 E-mail: ${result.tenant.email}<br><br>
+                        ? <strong>Loja criada com sucesso!</strong><br><br>
+                        ?? ID: ${result.tenant.id}<br>
+                        ?? Subdom�nio: ${result.tenant.subdomain}.seudominio.com<br>
+                        ?? E-mail: ${result.tenant.email}<br><br>
                         Redirecionando para o painel administrativo...
                     `;
                     
@@ -189,11 +189,11 @@
                     }, 2000);
                 } else {
                     messageDiv.className = 'message error';
-                    messageDiv.innerHTML = `❌ Erro: ${result.message || 'Falha ao criar loja'}`;
+                    messageDiv.innerHTML = `? Erro: ${result.message || 'Falha ao criar loja'}`;
                 }
             } catch (error) {
                 messageDiv.className = 'message error';
-                messageDiv.innerHTML = `❌ Erro de conexão: ${error.message}`;
+                messageDiv.innerHTML = `? Erro de conex�o: ${error.message}`;
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Criar Minha Loja';
