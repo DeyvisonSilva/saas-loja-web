@@ -1,489 +1,360 @@
-<!DOCTYPE html>
+Ôªø<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Card·pio Digital</title>
+    <title>Painel Admin - Card√°pio Digital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f0f2f5; }
-        
-        /* Layout */
-        .admin-container { display: flex; min-height: 100vh; }
-        .sidebar { width: 280px; background-color: #1f2937; color: white; position: fixed; height: 100vh; overflow-y: auto; }
-        .main-content { flex: 1; margin-left: 280px; padding: 20px; }
-        
-        /* Sidebar */
-        .sidebar-header { padding: 24px; border-bottom: 1px solid #374151; }
-        .sidebar-header h2 { font-size: 1.25rem; }
-        .nav-menu { padding: 20px 0; }
-        .nav-item { padding: 12px 24px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 12px; }
-        .nav-item:hover { background-color: #374151; }
-        .nav-item.active { background-color: #dc2626; }
-        
-        /* Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .stat-card h3 { color: #6b7280; font-size: 0.875rem; margin-bottom: 10px; }
-        .stat-card .value { font-size: 2rem; font-weight: bold; color: #1f2937; }
-        
-        /* Tabelas */
-        .table-container { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow-x: auto; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { color: #dc2626; }
+        .link-cardapio {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-card h3 { font-size: 0.875rem; color: #666; margin-bottom: 10px; }
+        .stat-card .value { font-size: 2rem; font-weight: bold; color: #dc2626; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .tab.active {
+            background: #dc2626;
+            color: white;
+        }
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            display: none;
+        }
+        .panel.active { display: block; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        th { background-color: #f9fafb; font-weight: 600; }
-        
-        /* Botıes */
-        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; }
-        .btn-primary { background-color: #dc2626; color: white; }
-        .btn-primary:hover { background-color: #b91c1c; }
-        .btn-success { background-color: #10b981; color: white; }
-        .btn-warning { background-color: #f59e0b; color: white; }
-        .btn-danger { background-color: #ef4444; color: white; }
-        
-        /* Modal */
-        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; border-radius: 10px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f9fafb; }
+        .status { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-paid { background: #d1fae5; color: #059669; }
+        .status-preparing { background: #dbeafe; color: #2563eb; }
+        .status-ready { background: #e0e7ff; color: #4338ca; }
+        .status-delivered { background: #d1fae5; color: #059669; }
+        select, button { padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; }
+        .btn { background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 500px;
+            max-width: 90%;
+        }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; }
-        
-        /* Status badges */
-        .status { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
-        .status-pending { background-color: #fef3c7; color: #d97706; }
-        .status-paid { background-color: #d1fae5; color: #059669; }
-        .status-preparing { background-color: #dbeafe; color: #2563eb; }
-        .status-ready { background-color: #e0e7ff; color: #4338ca; }
-        .status-delivered { background-color: #d1fae5; color: #059669; }
-        
-        .hidden { display: none; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>?? Card·pio Digital</h2>
-                <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 8px;">Painel Administrativo</p>
-            </div>
-            <div class="nav-menu">
-                <div class="nav-item active" onclick="showSection('dashboard')">
-                    <span>??</span> Dashboard
-                </div>
-                <div class="nav-item" onclick="showSection('pedidos')">
-                    <span>??</span> Pedidos
-                </div>
-                <div class="nav-item" onclick="showSection('produtos')">
-                    <span>??</span> Produtos
-                </div>
-                <div class="nav-item" onclick="showSection('categorias')">
-                    <span>??</span> Categorias
-                </div>
-                <div class="nav-item" onclick="showSection('estoque')">
-                    <span>??</span> Estoque
-                </div>
+    <div class="container">
+        <div class="header">
+            <h1>üçî Card√°pio Digital - Admin</h1>
+            <a href="#" id="linkCardapio" class="link-cardapio" target="_blank">üîó Ver Card√°pio</a>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card"><h3>Pedidos Hoje</h3><div class="value" id="statHoje">0</div></div>
+            <div class="stat-card"><h3>Pedidos Pendentes</h3><div class="value" id="statPendentes">0</div></div>
+            <div class="stat-card"><h3>Faturamento Hoje</h3><div class="value" id="statFaturamento">R$ 0</div></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('pedidos')">üìã Pedidos</button>
+            <button class="tab" onclick="showTab('produtos')">üçï Produtos</button>
+            <button class="tab" onclick="showTab('categorias')">üìÅ Categorias</button>
+        </div>
+
+        <div id="tabPedidos" class="panel active">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead><tr><th>ID</th><th>Cliente</th><th>Total</th><th>Status</th><th>A√ß√£o</th></tr></thead>
+                    <tbody id="listaPedidos"></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Dashboard Section -->
-            <div id="dashboardSection">
-                <h1 style="margin-bottom: 20px;">Dashboard</h1>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Pedidos Hoje</h3>
-                        <div class="value" id="statsHoje">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Pedidos Pendentes</h3>
-                        <div class="value" id="statsPendentes">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Faturamento Hoje</h3>
-                        <div class="value" id="statsFaturamento">R$ 0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Produtos sem Estoque</h3>
-                        <div class="value" id="statsEstoqueBaixo">0</div>
-                    </div>
-                </div>
+        <div id="tabProdutos" class="panel">
+            <button class="btn" onclick="abrirModalProduto()">+ Novo Produto</button>
+            <div style="overflow-x: auto; margin-top: 15px;">
+                <table>
+                    <thead><tr><th>Nome</th><th>Pre√ßo</th><th>Estoque</th><th>A√ß√µes</th></tr></thead>
+                    <tbody id="listaProdutos"></tbody>
+                </table>
             </div>
+        </div>
 
-            <!-- Pedidos Section -->
-            <div id="pedidosSection" class="hidden">
-                <h1 style="margin-bottom: 20px;">Pedidos</h1>
-                <div class="table-container">
-                    <table id="pedidosTable">
-                        <thead>
-                            <tr><th>ID</th><th>Cliente</th><th>Total</th><th>Status</th><th>Data</th><th>AÁıes</th></tr>
-                        </thead>
-                        <tbody id="pedidosList"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Produtos Section -->
-            <div id="produtosSection" class="hidden">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                    <h1>Produtos</h1>
-                    <button class="btn btn-primary" onclick="openProductModal()">+ Novo Produto</button>
-                </div>
-                <div class="table-container">
-                    <table id="produtosTable">
-                        <thead><tr><th>Nome</th><th>PreÁo</th><th>Estoque</th><th>Status</th><th>AÁıes</th></tr></thead>
-                        <tbody id="produtosList"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Categorias Section -->
-            <div id="categoriasSection" class="hidden">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                    <h1>Categorias</h1>
-                    <button class="btn btn-primary" onclick="openCategoryModal()">+ Nova Categoria</button>
-                </div>
-                <div class="table-container">
-                    <table id="categoriasTable">
-                        <thead><tr><th>Nome</th><th>Ordem</th><th>AÁıes</th></tr></thead>
-                        <tbody id="categoriasList"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Estoque Section -->
-            <div id="estoqueSection" class="hidden">
-                <h1 style="margin-bottom: 20px;">Controle de Estoque</h1>
-                <div class="table-container">
-                    <table id="estoqueTable">
-                        <thead><tr><th>Produto</th><th>Estoque Atual</th><th>Estoque MÌnimo</th><th>Status</th><th>AÁıes</th></tr></thead>
-                        <tbody id="estoqueList"></tbody>
-                    </table>
-                </div>
+        <div id="tabCategorias" class="panel">
+            <button class="btn" onclick="abrirModalCategoria()">+ Nova Categoria</button>
+            <div style="overflow-x: auto; margin-top: 15px;">
+                <table>
+                    <thead><tr><th>Nome</th><th>Ordem</th><th>A√ß√µes</th></tr></thead>
+                    <tbody id="listaCategorias"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <!-- Modal Produto -->
-    <div id="productModal" class="modal hidden">
+    <div id="modalProduto" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="productModalTitle">Novo Produto</h3>
-                <button onclick="closeProductModal()" style="background: none; border: none; font-size: 1.5rem;">?</button>
-            </div>
-            <form id="productForm">
-                <input type="hidden" id="productId">
-                <div class="form-group">
-                    <label>Nome</label>
-                    <input type="text" id="productName" required>
-                </div>
-                <div class="form-group">
-                    <label>DescriÁ„o</label>
-                    <textarea id="productDescription" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>PreÁo (R$)</label>
-                    <input type="number" id="productPrice" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>Categoria</label>
-                    <select id="productCategoryId" required></select>
-                </div>
-                <div class="form-group">
-                    <label>Estoque Inicial</label>
-                    <input type="number" id="productStock" value="0">
-                </div>
-                <div class="form-group">
-                    <label>Estoque MÌnimo</label>
-                    <input type="number" id="productMinStock" value="5">
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="productAvailable" checked> DisponÌvel para venda
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Salvar</button>
-            </form>
+            <h3 id="modalProdutoTitulo">Novo Produto</h3>
+            <input type="hidden" id="produtoId">
+            <div class="form-group"><label>Nome</label><input type="text" id="produtoNome" required></div>
+            <div class="form-group"><label>Descri√ß√£o</label><textarea id="produtoDescricao"></textarea></div>
+            <div class="form-group"><label>Pre√ßo</label><input type="number" id="produtoPreco" step="0.01" required></div>
+            <div class="form-group"><label>Categoria</label><select id="produtoCategoriaId"></select></div>
+            <div class="form-group"><label>Estoque</label><input type="number" id="produtoEstoque" value="0"></div>
+            <button class="btn" onclick="salvarProduto()">Salvar</button>
+            <button onclick="fecharModalProduto()">Cancelar</button>
         </div>
     </div>
 
     <!-- Modal Categoria -->
-    <div id="categoryModal" class="modal hidden">
+    <div id="modalCategoria" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="categoryModalTitle">Nova Categoria</h3>
-                <button onclick="closeCategoryModal()" style="background: none; border: none;">?</button>
-            </div>
-            <form id="categoryForm">
-                <input type="hidden" id="categoryId">
-                <div class="form-group">
-                    <label>Nome</label>
-                    <input type="text" id="categoryName" required>
-                </div>
-                <div class="form-group">
-                    <label>Ordem</label>
-                    <input type="number" id="categoryOrder" value="0">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Salvar</button>
-            </form>
+            <h3>Nova Categoria</h3>
+            <input type="hidden" id="categoriaId">
+            <div class="form-group"><label>Nome</label><input type="text" id="categoriaNome" required></div>
+            <div class="form-group"><label>Ordem</label><input type="number" id="categoriaOrdem" value="0"></div>
+            <button class="btn" onclick="salvarCategoria()">Salvar</button>
+            <button onclick="fecharModalCategoria()">Cancelar</button>
         </div>
     </div>
 
     <script>
-        // Pegar tenant da URL ou usar padr„o
-const urlParams = new URLSearchParams(window.location.search);
-const TENANT_ID = urlParams.get('tenant') || "cmokd943b0000r86pi8pw54st";
         const API_URL = "http://localhost:3000";
+        const urlParams = new URLSearchParams(window.location.search);
+        const TENANT_ID = urlParams.get('tenant') || localStorage.getItem('tenantId');
 
-        let categories = [];
+        // Carregar link do card√°pio
+        const linkCardapio = `${window.location.protocol}//${window.location.host}/cardapio.html?tenant=${TENANT_ID}`;
+        document.getElementById('linkCardapio').href = linkCardapio;
 
-        // NavegaÁ„o
-        function showSection(section) {
-            document.querySelectorAll('[id$="Section"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`${section}Section`).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.target.closest('.nav-item').classList.add('active');
-            
-            if (section === 'dashboard') loadDashboard();
-            if (section === 'pedidos') loadPedidos();
-            if (section === 'produtos') loadProdutos();
-            if (section === 'categorias') loadCategorias();
-            if (section === 'estoque') loadEstoque();
-        }
-
-        // Dashboard
         async function loadDashboard() {
-            const pedidos = await fetch(`${API_URL}/pedidos/${TENANT_ID}`).then(r => r.json());
-            const produtos = await fetch(`${API_URL}/cardapio/products/${TENANT_ID}?all=true`).then(r => r.json());
-            
-            const hoje = new Date().toISOString().split('T')[0];
-            const pedidosHoje = pedidos.filter(p => p.createdAt.split('T')[0] === hoje);
-            const pendentes = pedidos.filter(p => p.status === 'pending');
-            const faturamentoHoje = pedidosHoje.filter(p => p.status === 'paid').reduce((s, p) => s + p.total, 0);
-            const estoqueBaixo = produtos.filter(p => p.stock <= p.minStock);
-            
-            document.getElementById('statsHoje').textContent = pedidosHoje.length;
-            document.getElementById('statsPendentes').textContent = pendentes.length;
-            document.getElementById('statsFaturamento').textContent = `R$ ${faturamentoHoje.toFixed(2)}`;
-            document.getElementById('statsEstoqueBaixo').textContent = estoqueBaixo.length;
+            try {
+                const pedidos = await fetch(`${API_URL}/pedidos/${TENANT_ID}`).then(r => r.json());
+                const hoje = new Date().toISOString().split('T')[0];
+                const pedidosHoje = pedidos.filter(p => p.createdAt.split('T')[0] === hoje);
+                const pendentes = pedidos.filter(p => p.status === 'pending');
+                const faturamento = pedidosHoje.filter(p => p.status === 'paid').reduce((s, p) => s + p.total, 0);
+                document.getElementById('statHoje').innerText = pedidosHoje.length;
+                document.getElementById('statPendentes').innerText = pendentes.length;
+                document.getElementById('statFaturamento').innerText = `R$ ${faturamento.toFixed(2)}`;
+            } catch(e) { console.error(e); }
         }
 
-        // Pedidos
         async function loadPedidos() {
-            const pedidos = await fetch(`${API_URL}/pedidos/${TENANT_ID}`).then(r => r.json());
-            const statusLabels = { pending: 'Pendente', paid: 'Pago', preparing: 'Preparando', ready: 'Pronto', delivered: 'Entregue' };
-            
-            document.getElementById('pedidosList').innerHTML = pedidos.map(p => `
-                <tr>
-                    <td>${p.id.substring(0,8)}</td>
-                    <td>${p.customerName}<br><small>${p.customerPhone}</small></td>
-                    <td>R$ ${p.total.toFixed(2)}</td>
-                    <td><span class="status status-${p.status}">${statusLabels[p.status]}</span></td>
-                    <td>${new Date(p.createdAt).toLocaleString()}</td>
-                    <td>
-                        <select onchange="updateStatus('${p.id}', this.value)" class="btn">
-                            <option value="pending" ${p.status === 'pending' ? 'selected' : ''}>Pendente</option>
-                            <option value="paid" ${p.status === 'paid' ? 'selected' : ''}>Pago</option>
-                            <option value="preparing" ${p.status === 'preparing' ? 'selected' : ''}>Preparando</option>
-                            <option value="ready" ${p.status === 'ready' ? 'selected' : ''}>Pronto</option>
-                            <option value="delivered" ${p.status === 'delivered' ? 'selected' : ''}>Entregue</option>
-                        </select>
-                    </td>
-                </tr>
-            `).join('');
+            try {
+                const pedidos = await fetch(`${API_URL}/pedidos/${TENANT_ID}`).then(r => r.json());
+                const statusLabels = { pending: 'Pendente', paid: 'Pago', preparing: 'Preparando', ready: 'Pronto', delivered: 'Entregue' };
+                document.getElementById('listaPedidos').innerHTML = pedidos.map(p => `
+                    <tr>
+                        <td>${p.id.substring(0,8)}</td>
+                        <td>${p.customerName}<br><small>${p.customerPhone}</small></td>
+                        <td>R$ ${p.total}</td>
+                        <td><span class="status status-${p.status}">${statusLabels[p.status]}</span></td>
+                        <td>
+                            <select onchange="updateStatus('${p.id}', this.value)">
+                                <option value="pending" ${p.status==='pending'?'selected':''}>Pendente</option>
+                                <option value="paid" ${p.status==='paid'?'selected':''}>Pago</option>
+                                <option value="preparing" ${p.status==='preparing'?'selected':''}>Preparando</option>
+                                <option value="ready" ${p.status==='ready'?'selected':''}>Pronto</option>
+                                <option value="delivered" ${p.status==='delivered'?'selected':''}>Entregue</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch(e) { console.error(e); }
         }
 
         async function updateStatus(orderId, status) {
-            await fetch(`${API_URL}/pedidos/${orderId}/status?tenantId=${TENANT_ID}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status })
-            });
-            loadPedidos();
-            loadDashboard();
-        }
-
-        // Produtos
-        async function loadProdutos() {
-            const produtos = await fetch(`${API_URL}/cardapio/products/${TENANT_ID}?all=true`).then(r => r.json());
-            
-            document.getElementById('produtosList').innerHTML = produtos.map(p => `
-                <tr>
-                    <td>${p.name}</td>
-                    <td>R$ ${p.price.toFixed(2)}</td>
-                    <td>${p.stock}</td>
-                    <td>${p.isAvailable ? '? DisponÌvel' : '? IndisponÌvel'}</td>
-                    <td>
-                        <button class="btn btn-primary" onclick="editProduct('${p.id}')">Editar</button>
-                        <button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Excluir</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        async function editProduct(id) {
-            const produtos = await fetch(`${API_URL}/cardapio/products/${TENANT_ID}?all=true`).then(r => r.json());
-            const produto = produtos.find(p => p.id === id);
-            
-            document.getElementById('productId').value = produto.id;
-            document.getElementById('productName').value = produto.name;
-            document.getElementById('productDescription').value = produto.description || '';
-            document.getElementById('productPrice').value = produto.price;
-            document.getElementById('productStock').value = produto.stock;
-            document.getElementById('productMinStock').value = produto.minStock;
-            document.getElementById('productAvailable').checked = produto.isAvailable;
-            document.getElementById('productModalTitle').textContent = 'Editar Produto';
-            document.getElementById('productModal').classList.remove('hidden');
-            await loadCategoriasSelect();
-            document.getElementById('productCategoryId').value = produto.categoryId || '';
-        }
-
-        async function deleteProduct(id) {
-            if (confirm('Deseja realmente excluir este produto?')) {
-                await fetch(`${API_URL}/cardapio/products/${id}?tenantId=${TENANT_ID}`, { method: 'DELETE' });
-                loadProdutos();
-                loadEstoque();
-            }
-        }
-
-        async function loadCategoriasSelect() {
-            const cats = await fetch(`${API_URL}/cardapio/categories/${TENANT_ID}`).then(r => r.json());
-            const select = document.getElementById('productCategoryId');
-            select.innerHTML = '<option value="">Sem categoria</option>' + cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        }
-
-        function openProductModal() {
-            document.getElementById('productId').value = '';
-            document.getElementById('productForm').reset();
-            document.getElementById('productModalTitle').textContent = 'Novo Produto';
-            document.getElementById('productModal').classList.remove('hidden');
-            loadCategoriasSelect();
-        }
-
-        function closeProductModal() {
-            document.getElementById('productModal').classList.add('hidden');
-        }
-
-        document.getElementById('productForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('productId').value;
-            const data = {
-                name: document.getElementById('productName').value,
-                description: document.getElementById('productDescription').value,
-                price: parseFloat(document.getElementById('productPrice').value),
-                stock: parseInt(document.getElementById('productStock').value),
-                minStock: parseInt(document.getElementById('productMinStock').value),
-                isAvailable: document.getElementById('productAvailable').checked,
-                categoryId: document.getElementById('productCategoryId').value || null,
-                tenantId: TENANT_ID
-            };
-            
-            const url = id ? `${API_URL}/cardapio/products/${id}?tenantId=${TENANT_ID}` : `${API_URL}/cardapio/products`;
-            const method = id ? 'PATCH' : 'POST';
-            
-            await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            closeProductModal();
-            loadProdutos();
-            loadEstoque();
-        });
-
-        // Categorias
-        async function loadCategorias() {
-            categories = await fetch(`${API_URL}/cardapio/categories/${TENANT_ID}`).then(r => r.json());
-            document.getElementById('categoriasList').innerHTML = categories.map(c => `
-                <tr>
-                    <td>${c.name}</td>
-                    <td>${c.order}</td>
-                    <td>
-                        <button class="btn btn-primary" onclick="editCategory('${c.id}')">Editar</button>
-                        <button class="btn btn-danger" onclick="deleteCategory('${c.id}')">Excluir</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function openCategoryModal() {
-            document.getElementById('categoryId').value = '';
-            document.getElementById('categoryForm').reset();
-            document.getElementById('categoryModalTitle').textContent = 'Nova Categoria';
-            document.getElementById('categoryModal').classList.remove('hidden');
-        }
-
-        function closeCategoryModal() {
-            document.getElementById('categoryModal').classList.add('hidden');
-        }
-
-        async function editCategory(id) {
-            const cat = categories.find(c => c.id === id);
-            document.getElementById('categoryId').value = cat.id;
-            document.getElementById('categoryName').value = cat.name;
-            document.getElementById('categoryOrder').value = cat.order;
-            document.getElementById('categoryModalTitle').textContent = 'Editar Categoria';
-            document.getElementById('categoryModal').classList.remove('hidden');
-        }
-
-        async function deleteCategory(id) {
-            if (confirm('Deseja excluir esta categoria?')) {
-                await fetch(`${API_URL}/cardapio/categories/${id}`, { method: 'DELETE' });
-                loadCategorias();
-                loadProdutos();
-            }
-        }
-
-        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('categoryId').value;
-            const data = {
-                name: document.getElementById('categoryName').value,
-                order: parseInt(document.getElementById('categoryOrder').value),
-                tenantId: TENANT_ID
-            };
-            
-            const url = id ? `${API_URL}/cardapio/categories/${id}` : `${API_URL}/cardapio/categories`;
-            const method = id ? 'PATCH' : 'POST';
-            
-            await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            closeCategoryModal();
-            loadCategorias();
-        });
-
-        // Estoque
-        async function loadEstoque() {
-            const produtos = await fetch(`${API_URL}/cardapio/products/${TENANT_ID}?all=true`).then(r => r.json());
-            
-            document.getElementById('estoqueList').innerHTML = produtos.map(p => {
-                const isLow = p.stock <= p.minStock;
-                return `
-                    <tr style="${isLow ? 'background-color: #fee2e2;' : ''}">
-                        <td>${p.name}</td>
-                        <td><strong>${p.stock}</strong></td>
-                        <td>${p.minStock}</td>
-                        <td>${isLow ? '<span class="status status-pending">?? Estoque Baixo</span>' : '? Normal'}</td>
-                        <td>
-                            <button class="btn btn-primary" onclick="addStock('${p.id}')">+ Adicionar</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        async function addStock(productId) {
-            const qtd = prompt('Quantidade a adicionar:');
-            if (qtd && !isNaN(qtd)) {
-                await fetch(`${API_URL}/cardapio/products/${productId}/stock?tenantId=${TENANT_ID}`, {
+            try {
+                const response = await fetch(`${API_URL}/pedidos/${orderId}/status?tenantId=${TENANT_ID}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ quantity: parseInt(qtd) })
+                    body: JSON.stringify({ status })
                 });
-                loadEstoque();
+                if (response.ok) {
+                    loadPedidos();
+                    loadDashboard();
+                } else {
+                    alert('Erro ao atualizar status');
+                }
+            } catch(e) { alert('Erro de conex√£o'); }
+        }
+
+        async function loadProdutos() {
+            try {
+                const produtos = await fetch(`${API_URL}/cardapio/products/${TENANT_ID}?all=true`).then(r => r.json());
+                document.getElementById('listaProdutos').innerHTML = produtos.map(p => `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td>R$ ${p.price}</td>
+                        <td>${p.stock}</td>
+                        <td><button onclick="editarProduto('${p.id}')">Editar</button> <button onclick="excluirProduto('${p.id}')">Excluir</button></td>
+                    </tr>
+                `).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        async function loadCategorias() {
+            try {
+                const categorias = await fetch(`${API_URL}/cardapio/categories/${TENANT_ID}`).then(r => r.json());
+                document.getElementById('listaCategorias').innerHTML = categorias.map(c => `
+                    <tr>
+                        <td>${c.name}</td>
+                        <td>${c.order}</td>
+                        <td><button onclick="editarCategoria('${c.id}')">Editar</button> <button onclick="excluirCategoria('${c.id}')">Excluir</button></td>
+                    </tr>
+                `).join('');
+                // Popular select de categorias no modal
+                const select = document.getElementById('produtoCategoriaId');
+                select.innerHTML = '<option value="">Sem categoria</option>' + categorias.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        async function salvarProduto() {
+            const id = document.getElementById('produtoId').value;
+            const data = {
+                name: document.getElementById('produtoNome').value,
+                description: document.getElementById('produtoDescricao').value,
+                price: parseFloat(document.getElementById('produtoPreco').value),
+                stock: parseInt(document.getElementById('produtoEstoque').value),
+                tenantId: TENANT_ID,
+                categoryId: document.getElementById('produtoCategoriaId').value || null
+            };
+            const url = id ? `${API_URL}/cardapio/products/${id}?tenantId=${TENANT_ID}` : `${API_URL}/cardapio/products`;
+            const method = id ? 'PATCH' : 'POST';
+            await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            fecharModalProduto();
+            loadProdutos();
+        }
+
+        async function excluirProduto(id) {
+            if(confirm('Excluir produto?')) {
+                await fetch(`${API_URL}/cardapio/products/${id}?tenantId=${TENANT_ID}`, { method: 'DELETE' });
                 loadProdutos();
             }
         }
 
-        // Inicializar
+        async function editarProduto(id) {
+            const produtos = await fetch(`${API_URL}/cardapio/products/${TENANT_ID}?all=true`).then(r => r.json());
+            const p = produtos.find(p => p.id === id);
+            document.getElementById('produtoId').value = p.id;
+            document.getElementById('produtoNome').value = p.name;
+            document.getElementById('produtoDescricao').value = p.description || '';
+            document.getElementById('produtoPreco').value = p.price;
+            document.getElementById('produtoEstoque').value = p.stock;
+            document.getElementById('produtoCategoriaId').value = p.categoryId || '';
+            document.getElementById('modalProdutoTitulo').innerText = 'Editar Produto';
+            document.getElementById('modalProduto').style.display = 'flex';
+        }
+
+        function abrirModalProduto() {
+            document.getElementById('produtoId').value = '';
+            document.getElementById('produtoNome').value = '';
+            document.getElementById('produtoDescricao').value = '';
+            document.getElementById('produtoPreco').value = '';
+            document.getElementById('produtoEstoque').value = '0';
+            document.getElementById('modalProdutoTitulo').innerText = 'Novo Produto';
+            document.getElementById('modalProduto').style.display = 'flex';
+        }
+
+        function fecharModalProduto() { document.getElementById('modalProduto').style.display = 'none'; }
+
+        function abrirModalCategoria() {
+            document.getElementById('categoriaId').value = '';
+            document.getElementById('categoriaNome').value = '';
+            document.getElementById('categoriaOrdem').value = '0';
+            document.getElementById('modalCategoria').style.display = 'flex';
+        }
+
+        function fecharModalCategoria() { document.getElementById('modalCategoria').style.display = 'none'; }
+
+        async function salvarCategoria() {
+            const id = document.getElementById('categoriaId').value;
+            const data = { name: document.getElementById('categoriaNome').value, order: parseInt(document.getElementById('categoriaOrdem').value), tenantId: TENANT_ID };
+            const url = id ? `${API_URL}/cardapio/categories/${id}` : `${API_URL}/cardapio/categories`;
+            const method = id ? 'PATCH' : 'POST';
+            await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            fecharModalCategoria();
+            loadCategorias();
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            if(tab === 'pedidos') loadPedidos();
+            if(tab === 'produtos') loadProdutos();
+            if(tab === 'categorias') loadCategorias();
+        }
+
         loadDashboard();
+        loadPedidos();
+        loadCategorias();
     </script>
 </body>
 </html>

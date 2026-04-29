@@ -1,4 +1,4 @@
-﻿import { Controller, Post, Get, Param, Body, Query } from '@nestjs/common';
+﻿import { Controller, Post, Param, Query } from '@nestjs/common';
 import { PagamentosService } from './pagamentos.service';
 
 @Controller('pagamentos')
@@ -6,28 +6,12 @@ export class PagamentosController {
   constructor(private readonly pagamentosService: PagamentosService) {}
 
   @Post('pix/:orderId')
-  createPixPayment(
+  async createPixPayment(
     @Param('orderId') orderId: string,
     @Query('tenantId') tenantId: string,
   ) {
-    return this.pagamentosService.createPixPayment(orderId, tenantId);
-  }
-
-  @Post('webhook/asaas')
-  webhook(@Body() payload: any) {
-    return this.pagamentosService.handleWebhook(payload);
-  }
-
-  @Get('status/:paymentId')
-  getStatus(@Param('paymentId') paymentId: string) {
-    return this.pagamentosService.checkPaymentStatus(paymentId);
-  }
-
-  @Get('qr-code/:orderId')
-  getQrCode(
-    @Param('orderId') orderId: string,
-    @Query('tenantId') tenantId: string,
-  ) {
-    return this.pagamentosService.getPaymentQrCode(orderId, tenantId);
+    console.log(`Controller: Gerando PIX para pedido ${orderId}, tenant ${tenantId}`);
+    const result = await this.pagamentosService.createPixPayment(orderId, tenantId);
+    return result;
   }
 }

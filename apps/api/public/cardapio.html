@@ -1,9 +1,9 @@
-Ôªø<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card√°pio Digital</title>
+    <title>Card·pio Digital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6; color: #1f2937; }
@@ -52,8 +52,8 @@
     <div id="app">
         <header class="header">
             <div class="header-content">
-                <h1 class="logo">üçî Card√°pio Digital</h1>
-                <button class="cart-button" onclick="toggleCart()">üõí Carrinho (<span id="cartCount">0</span>)</button>
+                <h1 class="logo">?? Card·pio Digital</h1>
+                <button class="cart-button" onclick="toggleCart()">?? Carrinho (<span id="cartCount">0</span>)</button>
             </div>
         </header>
 
@@ -73,7 +73,7 @@
             <div class="cart-sidebar" onclick="event.stopPropagation()">
                 <div class="cart-header">
                     <h2>Finalizar Pedido</h2>
-                    <button class="close-cart" onclick="toggleCart()">‚úï</button>
+                    <button class="close-cart" onclick="toggleCart()">?</button>
                 </div>
                 <div class="cart-items" id="cartItems"></div>
                 <div class="cart-footer" id="cartFooter" style="display:none">
@@ -86,8 +86,8 @@
                         <input type="tel" id="customerPhone" placeholder="(11) 99999-9999">
                     </div>
                     <div class="form-group">
-                        <label>Endere√ßo (opcional)</label>
-                        <input type="text" id="customerAddress" placeholder="Rua, n√∫mero, bairro">
+                        <label>EndereÁo (opcional)</label>
+                        <input type="text" id="customerAddress" placeholder="Rua, n˙mero, bairro">
                     </div>
                     <div class="cart-total">
                         <span>Total:</span>
@@ -106,7 +106,7 @@
         let selectedCategory = null;
 
         // IMPORTANTE: Coloque o ID da sua loja aqui
-        const TENANT_ID = "cmokd943b0000r86pi8pw54st";
+        const urlParams = new URLSearchParams(window.location.search); const TENANT_ID = urlParams.get("tenant") || "cmokd943b0000r86pi8pw54st";;
         const API_URL = "http://localhost:3000";
 
         async function loadCardapio() {
@@ -117,7 +117,7 @@
                 renderCategories();
                 renderProducts();
             } catch (error) {
-                document.getElementById('productsGrid').innerHTML = '<div class="empty-state">Erro ao carregar card√°pio</div>';
+                document.getElementById('productsGrid').innerHTML = '<div class="empty-state">Erro ao carregar card·pio</div>';
             }
         }
 
@@ -146,7 +146,7 @@
                 filteredProducts = products.filter(p => p.categoryId === selectedCategory);
             }
             if (filteredProducts.length === 0) {
-                grid.innerHTML = '<div class="empty-state">Nenhum produto dispon√≠vel</div>';
+                grid.innerHTML = '<div class="empty-state">Nenhum produto disponÌvel</div>';
                 return;
             }
             grid.innerHTML = filteredProducts.map(product => `
@@ -208,7 +208,7 @@
                             <button class="quantity-btn" onclick="updateQuantity('${item.id}', -1)">-</button>
                             <span>${item.quantity}</span>
                             <button class="quantity-btn" onclick="updateQuantity('${item.id}', 1)">+</button>
-                            <button class="remove-btn" onclick="removeFromCart('${item.id}')">üóëÔ∏è</button>
+                            <button class="remove-btn" onclick="removeFromCart('${item.id}')">???</button>
                         </div>
                     </div>
                 `).join('');
@@ -280,18 +280,18 @@
                         <html>
                             <head><title>Pagar com PIX</title></head>
                             <body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:Arial;padding:20px;">
-                                <h2>üí∞ Pagamento PIX</h2>
+                                <h2>?? Pagamento PIX</h2>
                                 <img src="${pixData.qrCodeImage}" style="max-width:300px;margin:20px;">
                                 <p><strong>Pedido: ${order.id.substring(0,8)}</strong></p>
                                 <p><strong>Valor: R$ ${total.toFixed(2)}</strong></p>
                                 <p>Escaneie o QR Code no seu banco</p>
-                                <p style="font-size:12px;color:#666;">Ap√≥s o pagamento, o pedido ser√° confirmado automaticamente</p>
+                                <p style="font-size:12px;color:#666;">ApÛs o pagamento, o pedido ser· confirmado automaticamente</p>
                                 <button onclick="window.close()" style="margin-top:20px;padding:10px 20px;">Fechar</button>
                             </body>
                         </html>
                     `);
                 } else {
-                    alert(`‚úÖ Pedido #${order.id.substring(0,8)} criado!\nTotal: R$ ${total.toFixed(2)}\n\nEm breve voc√™ receber√° o link de pagamento.`);
+                    alert(`? Pedido #${order.id.substring(0,8)} criado!\nTotal: R$ ${total.toFixed(2)}\n\nEm breve vocÍ receber· o link de pagamento.`);
                 }
                 
                 // Limpar carrinho e fechar
@@ -299,7 +299,7 @@
                 updateCartUI();
                 toggleCart();
                 
-                // Limpar formul√°rio
+                // Limpar formul·rio
                 document.getElementById('customerName').value = '';
                 document.getElementById('customerPhone').value = '';
                 document.getElementById('customerAddress').value = '';

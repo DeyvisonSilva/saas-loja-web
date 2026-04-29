@@ -1,0 +1,14 @@
+﻿services:
+  - type: web
+    name: cardapio-api
+    runtime: node
+    plan: free
+    buildCommand: cd apps/api && npm install && npx prisma generate && npm run build
+    startCommand: cd apps/api && npm run start:prod
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: PORT
+        value: 3000
