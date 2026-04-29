@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastre sua Loja - Cardápio Digital</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-top: 50px;
+        }
+        h1 { text-align: center; margin-bottom: 10px; color: #1f2937; }
+        .subtitle { text-align: center; color: #6b7280; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #374151; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #dc2626;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn:hover { background-color: #b91c1c; }
+        .btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            display: none;
+        }
+        .message.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            display: block;
+        }
+        .message.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            display: block;
+        }
+        .preview {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        .preview span {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .link { text-align: center; margin-top: 20px; }
+        .link a { color: #dc2626; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🍔 Cadastre sua Loja</h1>
+            <p class="subtitle">Comece a vender online em minutos</p>
+
+            <form id="signupForm">
+                <div class="form-group">
+                    <label>Nome da Loja *</label>
+                    <input type="text" id="name" placeholder="Ex: Hamburgueria do João" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Subdomínio *</label>
+                    <input type="text" id="subdomain" placeholder="hamburguerjoao" required>
+                    <div class="preview">🔗 Seu cardápio: <span id="preview">hamburguerjoao</span>.seudominio.com</div>
+                </div>
+
+                <div class="form-group">
+                    <label>E-mail *</label>
+                    <input type="email" id="email" placeholder="contato@hamburguer.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Telefone (WhatsApp) *</label>
+                    <input type="tel" id="phone" placeholder="(11) 99999-9999" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Senha *</label>
+                    <input type="password" id="password" placeholder="Mínimo 6 caracteres" required>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">Criar Minha Loja</button>
+            </form>
+
+            <div id="message" class="message"></div>
+            <div class="link">
+                <a href="/login/">Já tenho uma loja →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:3000";
+
+        // Preview do subdomínio
+        document.getElementById('subdomain').addEventListener('input', function(e) {
+            let value = e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '');
+            e.target.value = value;
+            document.getElementById('preview').textContent = value || 'minhaloja';
+        });
+
+        // Formatar telefone
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length === 11) {
+                value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            } else if (value.length === 10) {
+                value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+            }
+            e.target.value = value;
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Criando...';
+            messageDiv.className = 'message';
+            
+            const data = {
+                name: document.getElementById('name').value,
+                subdomain: document.getElementById('subdomain').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value.replace(/\D/g, ''),
+                password: document.getElementById('password').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.className = 'message success';
+                    messageDiv.innerHTML = `
+                        ✅ <strong>Loja criada com sucesso!</strong><br><br>
+                        📋 ID: ${result.tenant.id}<br>
+                        🌐 Subdomínio: ${result.tenant.subdomain}.seudominio.com<br>
+                        📧 E-mail: ${result.tenant.email}<br><br>
+                        Redirecionando para o painel administrativo...
+                    `;
+                    
+                    // Salvar token no localStorage
+                    localStorage.setItem('token', result.token);
+                    localStorage.setItem('tenant', JSON.stringify(result.tenant));
+                    
+                    setTimeout(() => {
+                        window.location.href = `/admin/index.html?tenant=${result.tenant.id}`;
+                    }, 2000);
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.innerHTML = `❌ Erro: ${result.message || 'Falha ao criar loja'}`;
+                }
+            } catch (error) {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `❌ Erro de conexão: ${error.message}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Criar Minha Loja';
+            }
+        });
+    </script>
+</body>
+</html>

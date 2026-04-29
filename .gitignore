@@ -1,0 +1,40 @@
+# Dependências
+node_modules/
+.pnp/
+.pnp.js
+
+# Ambiente
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+.next/
+out/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Banco de dados
+*.db
+*.sqlite
+prisma/*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Sistema
+Thumbs.db
+.DS_Store
+
+# Docker
+volumes/
+
+# DOCS
+docs/

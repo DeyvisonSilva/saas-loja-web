@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cardápio Digital</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 400px; margin: 100px auto; }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { text-align: center; margin-bottom: 30px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .message { margin-top: 20px; padding: 10px; border-radius: 10px; display: none; }
+        .error { background: #fee2e2; color: #991b1b; display: block; }
+        .success { background: #d1fae5; color: #065f46; display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔐 Login</h1>
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="E-mail" required>
+                <input type="password" id="password" placeholder="Senha" required>
+                <button type="submit">Entrar</button>
+            </form>
+            <div id="message" class="message"></div>
+            <p style="text-align: center; margin-top: 20px;">
+                <a href="/signup/">Não tem uma loja? Cadastre-se</a>
+            </p>
+        </div>
+    </div>
+    <script>
+        const API_URL = "http://localhost:3000";
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('message');
+            msg.className = 'message';
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('tenant', JSON.stringify(data.tenant));
+                    msg.className = 'message success';
+                    msg.textContent = 'Login realizado! Redirecionando...';
+                    setTimeout(() => {
+                        window.location.href = `/admin/index.html?tenant=${data.tenant.id}`;
+                    }, 1000);
+                } else {
+                    msg.className = 'message error';
+                    msg.textContent = data.message || 'Erro ao fazer login';
+                }
+            } catch (error) {
+                msg.className = 'message error';
+                msg.textContent = 'Erro de conexão';
+            }
+        });
+    </script>
+</body>
+</html>
