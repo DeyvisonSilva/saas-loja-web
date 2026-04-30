@@ -1,59 +1,44 @@
 ﻿const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function createSuperAdmin() {
+async function main() {
   try {
-    // Verificar se a tabela existe
-    const result = await prisma.$queryRaw`
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_name = 'SuperAdmin'
+    // Criar extensão pgcrypto
+    await prisma.$executeRaw`CREATE EXTENSION IF NOT EXISTS "pgcrypto";`;
+    console.log('✅ Extensão pgcrypto criada');
+    
+    // Remover tabela antiga se existir
+    await prisma.$executeRaw`DROP TABLE IF EXISTS "SuperAdmin";`;
+    console.log('✅ Tabela antiga removida');
+    
+    // Criar tabela SuperAdmin sem updatedAt
+    await prisma.$executeRaw`
+      CREATE TABLE "SuperAdmin" (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        name TEXT NOT NULL,
+        role TEXT DEFAULT 'super_admin',
+        "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
+    console.log('✅ Tabela criada');
     
-    const tableExists = result[0].exists;
-    
-    if (!tableExists) {
-      console.log('Criando tabela SuperAdmin...');
-      await prisma.$executeRaw`
-        CREATE TABLE "SuperAdmin" (
-          id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-          email TEXT UNIQUE NOT NULL,
-          password TEXT NOT NULL,
-          name TEXT NOT NULL,
-          role TEXT DEFAULT 'super_admin',
-          "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      `;
-      console.log('Tabela criada com sucesso!');
-    }
-    
-    // Inserir super admin
+    // Inserir Super Admin
     await prisma.$executeRaw`
-      INSERT INTO "SuperAdmin" (id, email, password, name, role) 
-      VALUES (
-        gen_random_uuid()::text,
-        'admin@sistema.com',
-        '$2b$10$N9qo8uLOickgx2ZMRZoMy.MrJ5qRqZq5qRqZq5qRqZq5qRqZq5q',
-        'Administrador Master',
-        'super_admin'
-      ) ON CONFLICT (email) DO NOTHING;
+      INSERT INTO "SuperAdmin" (email, password, name, role) 
+      VALUES ('admin@sistema.com', 'admin123', 'Administrador Master', 'super_admin');
     `;
-    
-    console.log('Super Admin criado/verificado com sucesso!');
+    console.log('✅ Super Admin criado!');
     
     // Verificar
-    const admin = await prisma.$queryRaw`
-      SELECT id, email, name, role FROM "SuperAdmin" WHERE email = 'admin@sistema.com';
-    `;
-    console.log('Super Admin:', admin[0]);
+    const result = await prisma.$queryRaw`SELECT id, email, name, role FROM "SuperAdmin"`;
+    console.log('📋 SuperAdmin:', result);
     
-  } catch (error) {
-    console.error('Erro:', error.message);
-  } finally {
-    await prisma.$disconnect();
+  } catch(e) { 
+    console.error('❌ Erro:', e.message); 
   }
+  await prisma.$disconnect();
 }
 
-createSuperAdmin();
+main();
