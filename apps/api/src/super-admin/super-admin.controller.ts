@@ -1,4 +1,4 @@
-﻿import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+﻿import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
 import { SuperAdminService } from './super-admin.service';
 
 @Controller('super-admin')
@@ -7,7 +7,13 @@ export class SuperAdminController {
 
   @Post('login')
   async login(@Body() body: { email: string; password: string }) {
+    console.log('📥 POST /super-admin/login', body.email);
     return this.superAdminService.login(body.email, body.password);
+  }
+  
+  @Get('test')
+  async test() {
+    return { status: 'ok', message: 'Super Admin API funcionando' };
   }
   
   @Get('stats')
@@ -16,37 +22,12 @@ export class SuperAdminController {
   }
   
   @Get('lojas')
-  async getAllLojas() {
+  async getLojas() {
     return this.superAdminService.getAllLojas();
   }
   
-  @Get('lojas/:id')
-  async getLojaById(@Param('id') id: string) {
-    return this.superAdminService.getLojaById(id);
-  }
-  
-  @Patch('lojas/:id/status')
-  async toggleLojaStatus(@Param('id') id: string, @Body('isActive') isActive: boolean) {
-    return this.superAdminService.toggleLojaStatus(id, isActive);
-  }
-  
-  @Patch('lojas/:id/plan')
-  async updateLojaPlan(@Param('id') id: string, @Body('plan') plan: string) {
-    return this.superAdminService.updateLojaPlan(id, plan);
-  }
-  
-  @Delete('lojas/:id')
-  async deleteLoja(@Param('id') id: string) {
-    return this.superAdminService.deleteLoja(id);
-  }
-  
   @Get('pedidos')
-  async getAllPedidos() {
+  async getPedidos() {
     return this.superAdminService.getAllPedidos();
-  }
-  
-  @Get('pedidos/:lojaId')
-  async getPedidosByLoja(@Param('lojaId') lojaId: string) {
-    return this.superAdminService.getPedidosByLoja(lojaId);
   }
 }

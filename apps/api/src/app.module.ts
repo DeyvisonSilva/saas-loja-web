@@ -9,7 +9,6 @@ import { PedidosModule } from './pedidos/pedidos.module';
 import { PagamentosModule } from './pagamentos/pagamentos.module';
 import { AuthModule } from './auth/auth.module';
 import { SuperAdminModule } from './super-admin/super-admin.module';
-import { UploadModule } from './upload/upload.module';
 import { PrismaService } from './prisma/prisma.service';
 
 @Module({
@@ -29,7 +28,6 @@ import { PrismaService } from './prisma/prisma.service';
     PagamentosModule,
     AuthModule,
     SuperAdminModule,
-    UploadModule,
   ],
   controllers: [AppController],
   providers: [PrismaService],
