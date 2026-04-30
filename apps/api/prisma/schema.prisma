@@ -8,21 +8,29 @@ datasource db {
 }
 
 model Tenant {
-  id             String     @id @default(cuid())
-  name           String
-  subdomain      String     @unique
-  email          String     @unique
-  phone          String
-  cnpj           String?
+  id            String   @id @default(cuid())
+  name          String
+  subdomain     String   @unique
+  email         String   @unique
+  password      String
+  phone         String
+  cnpj          String?
   asaasAccountId String?
-  isActive       Boolean    @default(true)
-  plan           String     @default("basic")
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  password       String
-  categories     Category[]
-  orders         Order[]
-  products       Product[]
+  isActive      Boolean  @default(true)
+  plan          String   @default("basic")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Branding
+  logoUrl       String?
+  primaryColor  String   @default("#dc2626")
+  secondaryColor String  @default("#f3f4f6")
+  customDomain  String?
+  
+  // Relacionamentos
+  categories    Category[]
+  products      Product[]
+  orders        Order[]
 }
 
 model Category {
