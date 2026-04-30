@@ -16,14 +16,25 @@
         .product-name { font-size: 1.2rem; font-weight: bold; }
         .product-price { color: #dc2626; font-size: 1.3rem; font-weight: bold; margin-top: 10px; }
         .add-btn { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
-        .cart-modal { display: none; position: fixed; top: 0; right: 0; width: 100%; max-width: 400px; height: 100%; background: white; box-shadow: -2px 0 5px rgba(0,0,0,0.2); z-index: 1000; }
+        .cart-modal { display: none; position: fixed; top: 0; right: 0; width: 100%; max-width: 450px; height: 100%; background: white; box-shadow: -2px 0 5px rgba(0,0,0,0.2); z-index: 1000; overflow-y: auto; }
         .cart-header { padding: 15px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; }
-        .cart-items { padding: 15px; max-height: 60%; overflow-y: auto; }
-        .cart-footer { padding: 15px; border-top: 1px solid #ddd; position: absolute; bottom: 0; width: 100%; background: white; }
-        .checkout-btn { background: #dc2626; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; }
+        .cart-items { padding: 15px; max-height: 40%; overflow-y: auto; }
+        .cart-footer { padding: 15px; border-top: 1px solid #ddd; background: white; }
+        .checkout-btn { background: #dc2626; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; font-size: 1rem; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-        input, select { width: 100%; padding: 8px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .payment-option { border: 2px solid #e5e7eb; border-radius: 10px; padding: 15px; margin-bottom: 15px; cursor: pointer; transition: all 0.2s; }
+        .payment-option:hover { border-color: #dc2626; }
+        .payment-option.selected { border-color: #dc2626; background: #fef2f2; }
+        .payment-icon { font-size: 1.5rem; margin-right: 10px; }
+        .card-fields { display: none; margin-top: 15px; padding: 15px; background: #f9fafb; border-radius: 8px; }
+        .qr-code-container { text-align: center; padding: 20px; }
+        .qr-code-image { max-width: 200px; margin: 10px auto; }
+        .boleto-link { word-break: break-all; color: #dc2626; text-decoration: none; }
         .loading { text-align: center; padding: 50px; }
+        .success-message { background: #d1fae5; color: #065f46; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .error-message { background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .payment-status { margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -47,14 +58,42 @@
         <div class="cart-footer">
             <div style="margin-bottom:15px;"><strong>Total: R$ <span id="cartTotal">0.00</span></strong></div>
             <div><input type="text" id="customerName" placeholder="Seu nome" required></div>
-            <div><input type="text" id="customerPhone" placeholder="WhatsApp" required></div>
+            <div><input type="text" id="customerPhone" placeholder="WhatsApp com DDD" required></div>
             <div>
-                <select id="deliveryType">
+                <select id="deliveryType" onchange="toggleAddress()">
                     <option value="pickup">Retirada no balcão</option>
                     <option value="delivery">Delivery</option>
                 </select>
             </div>
             <div id="addressField" style="display:none;"><input type="text" id="customerAddress" placeholder="Endereço completo"></div>
+            
+            <div style="margin: 15px 0;"><strong>Forma de Pagamento</strong></div>
+            
+            <div id="paymentOptions">
+                <div class="payment-option" onclick="selectPayment('pix')">
+                    <div><span class="payment-icon">📱</span> Pix</div>
+                    <div style="font-size:0.8rem;color:#666;">Pagamento instantâneo com QR Code</div>
+                </div>
+                <div class="payment-option" onclick="selectPayment('credit_card')">
+                    <div><span class="payment-icon">💳</span> Cartão de Crédito</div>
+                    <div style="font-size:0.8rem;color:#666;">Visa, Mastercard, Elo, American Express</div>
+                </div>
+                <div class="payment-option" onclick="selectPayment('boleto')">
+                    <div><span class="payment-icon">📄</span> Boleto Bancário</div>
+                    <div style="font-size:0.8rem;color:#666;">Vencimento em 3 dias úteis</div>
+                </div>
+            </div>
+            
+            <div id="cardFields" class="card-fields">
+                <input type="text" id="cardNumber" placeholder="Número do cartão">
+                <input type="text" id="cardHolder" placeholder="Nome no cartão">
+                <div style="display:flex;gap:10px;">
+                    <input type="text" id="cardExpiry" placeholder="MM/AA" style="width:50%;">
+                    <input type="text" id="cardCvv" placeholder="CVV" style="width:50%;">
+                </div>
+            </div>
+            
+            <div id="paymentStatus" class="payment-status"></div>
             <button class="checkout-btn" onclick="submitOrder()">Confirmar Pedido</button>
         </div>
     </div>
@@ -63,6 +102,8 @@
         let products = [];
         let cart = [];
         let tenantId = null;
+        let selectedPayment = null;
+        let currentOrderId = null;
 
         const urlParams = new URLSearchParams(window.location.search);
         tenantId = urlParams.get('tenant');
@@ -128,6 +169,7 @@
         function openCart() {
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('cartModal').style.display = 'block';
+            resetPaymentSelection();
         }
 
         function closeCart() {
@@ -135,10 +177,28 @@
             document.getElementById('cartModal').style.display = 'none';
         }
 
-        document.getElementById('deliveryType').addEventListener('change', function() {
-            const show = this.value === 'delivery';
+        function toggleAddress() {
+            const show = document.getElementById('deliveryType').value === 'delivery';
             document.getElementById('addressField').style.display = show ? 'block' : 'none';
-        });
+        }
+
+        function selectPayment(payment) {
+            selectedPayment = payment;
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+            event.target.closest('.payment-option').classList.add('selected');
+            
+            const cardFields = document.getElementById('cardFields');
+            cardFields.style.display = (payment === 'credit_card') ? 'block' : 'none';
+            
+            document.getElementById('paymentStatus').innerHTML = '';
+        }
+
+        function resetPaymentSelection() {
+            selectedPayment = null;
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById('cardFields').style.display = 'none';
+            document.getElementById('paymentStatus').innerHTML = '';
+        }
 
         async function submitOrder() {
             const name = document.getElementById('customerName').value;
@@ -153,6 +213,11 @@
             
             if (deliveryType === 'delivery' && !address) {
                 alert('Preencha o endereço para entrega');
+                return;
+            }
+            
+            if (!selectedPayment) {
+                alert('Selecione uma forma de pagamento');
                 return;
             }
             
@@ -172,23 +237,111 @@
                 orderData.customerAddress = address;
             }
             
+            const statusDiv = document.getElementById('paymentStatus');
+            statusDiv.innerHTML = '<div class="loading">Processando pedido...</div>';
+            
             try {
-                const response = await fetch('/pedidos', {
+                // Criar pedido
+                const orderRes = await fetch('/pedidos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
-                const result = await response.json();
-                if (response.ok) {
-                    alert(`Pedido #${result.id.substring(0,8)} criado com sucesso!\nTotal: R$ ${result.total.toFixed(2)}`);
-                    cart = [];
-                    updateCartUI();
-                    closeCart();
-                } else {
-                    alert('Erro: ' + (result.message || 'Falha ao criar pedido'));
+                const order = await orderRes.json();
+                
+                if (!orderRes.ok) {
+                    statusDiv.innerHTML = `<div class="error-message">Erro: ${order.message}</div>`;
+                    return;
                 }
+                
+                currentOrderId = order.id;
+                
+                // Processar pagamento
+                if (selectedPayment === 'pix') {
+                    const pixRes = await fetch(`/pagamentos/pix/${order.id}?tenantId=${tenantId}`, { method: 'POST' });
+                    const pix = await pixRes.json();
+                    
+                    if (pixRes.ok) {
+                        statusDiv.innerHTML = `
+                            <div class="qr-code-container">
+                                <h4>Pagar com PIX</h4>
+                                <img src="${pix.qrCodeImage}" class="qr-code-image">
+                                <p>Valor: R$ ${pix.value.toFixed(2)}</p>
+                                <p>Escaneie o QR Code no seu banco</p>
+                                <p style="font-size:0.8rem;color:#666;">QR Code válido por 1 hora</p>
+                            </div>
+                        `;
+                        cart = [];
+                        updateCartUI();
+                    } else {
+                        statusDiv.innerHTML = `<div class="error-message">Erro ao gerar PIX</div>`;
+                    }
+                    
+                } else if (selectedPayment === 'boleto') {
+                    const boletoRes = await fetch(`/pagamentos/boleto/${order.id}?tenantId=${tenantId}`, { method: 'POST' });
+                    const boleto = await boletoRes.json();
+                    
+                    if (boletoRes.ok) {
+                        statusDiv.innerHTML = `
+                            <div class="success-message">
+                                <h4>Boleto gerado!</h4>
+                                <p>Valor: R$ ${boleto.value.toFixed(2)}</p>
+                                <p>Vencimento: ${new Date(boleto.dueDate).toLocaleDateString()}</p>
+                                <a href="${boleto.boletoUrl}" target="_blank" class="boleto-link">Visualizar Boleto</a><br>
+                                <a href="${boleto.boletoPdf}" target="_blank" class="boleto-link">Baixar PDF</a>
+                            </div>
+                        `;
+                        cart = [];
+                        updateCartUI();
+                    } else {
+                        statusDiv.innerHTML = `<div class="error-message">Erro ao gerar boleto</div>`;
+                    }
+                    
+                } else if (selectedPayment === 'credit_card') {
+                    const cardNumber = document.getElementById('cardNumber').value;
+                    const cardHolder = document.getElementById('cardHolder').value;
+                    const cardExpiry = document.getElementById('cardExpiry').value;
+                    const cardCvv = document.getElementById('cardCvv').value;
+                    
+                    if (!cardNumber || !cardHolder || !cardExpiry || !cardCvv) {
+                        statusDiv.innerHTML = `<div class="error-message">Preencha todos os dados do cartão</div>`;
+                        return;
+                    }
+                    
+                    const cardData = {
+                        cardNumber: cardNumber.replace(/\s/g, ''),
+                        cardHolder: cardHolder,
+                        expiryMonth: parseInt(cardExpiry.split('/')[0]),
+                        expiryYear: parseInt('20' + cardExpiry.split('/')[1]),
+                        cvv: cardCvv
+                    };
+                    
+                    const cardRes = await fetch(`/pagamentos/cartao/${order.id}?tenantId=${tenantId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(cardData)
+                    });
+                    const cartao = await cardRes.json();
+                    
+                    if (cartao.success) {
+                        statusDiv.innerHTML = `
+                            <div class="success-message">
+                                <h4>✅ Pagamento aprovado!</h4>
+                                <p>Pedido #${order.id.substring(0,8)} confirmado!</p>
+                                <p>Valor: R$ ${cartao.value.toFixed(2)}</p>
+                                <p>Em breve você receberá a confirmação.</p>
+                            </div>
+                        `;
+                        cart = [];
+                        updateCartUI();
+                        setTimeout(() => closeCart(), 3000);
+                    } else {
+                        statusDiv.innerHTML = `<div class="error-message">❌ Pagamento recusado. ${cartao.message || 'Tente outro cartão'}</div>`;
+                    }
+                }
+                
             } catch (err) {
-                alert('Erro ao enviar pedido: ' + err.message);
+                statusDiv.innerHTML = `<div class="error-message">Erro ao processar pedido: ${err.message}</div>`;
             }
         }
 
