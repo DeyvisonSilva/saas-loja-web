@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+        }
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 1.5rem; }
+        .logout-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 { color: #6b7280; font-size: 0.875rem; margin-bottom: 10px; }
+        .stat-card .value { font-size: 2rem; font-weight: bold; color: #dc2626; }
+        .lojas-table {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f9fafb; }
+        .status-active { color: #10b981; font-weight: bold; }
+        .status-inactive { color: #ef4444; font-weight: bold; }
+        .btn {
+            padding: 4px 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .loading { text-align: center; padding: 50px; color: #6b7280; }
+        .error { color: #ef4444; text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏪 Super Admin - Gestão do Sistema</h1>
+        <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+    <div class="container">
+        <div class="stats" id="stats">
+            <div class="stat-card"><h3>Lojas</h3><div class="value" id="statLojas">-</div></div>
+            <div class="stat-card"><h3>Produtos</h3><div class="value" id="statProdutos">-</div></div>
+            <div class="stat-card"><h3>Pedidos</h3><div class="value" id="statPedidos">-</div></div>
+            <div class="stat-card"><h3>Faturamento</h3><div class="value" id="statFaturamento">-</div></div>
+        </div>
+        
+        <div class="lojas-table">
+            <h2 style="margin-bottom: 20px;">Todas as Lojas</h2>
+            <div id="lojasContainer">
+                <div class="loading">Carregando...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "";
+        
+        function getToken() {
+            return localStorage.getItem('superAdminToken');
+        }
+        
+        function logout() {
+            localStorage.removeItem('superAdminToken');
+            localStorage.removeItem('superAdmin');
+            window.location.href = '/super-admin/';
+        }
+        
+        function checkAuth() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/super-admin/';
+            }
+        }
+        
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_URL}/super-admin/stats`, {
+                    headers: { Authorization: `Bearer ${getToken()}` }
+                });
+                const data = await response.json();
+                document.getElementById('statLojas').textContent = data.lojas || 0;
+                document.getElementById('statProdutos').textContent = data.produtos || 0;
+                document.getElementById('statPedidos').textContent = data.pedidos || 0;
+                document.getElementById('statFaturamento').textContent = `R$ ${(data.faturamento || 0).toFixed(2)}`;
+            } catch (error) {
+                console.error('Erro ao carregar stats:', error);
+            }
+        }
+        
+        async function loadLojas() {
+            try {
+                const response = await fetch(`${API_URL}/super-admin/lojas`, {
+                    headers: { Authorization: `Bearer ${getToken()}` }
+                });
+                const lojas = await response.json();
+                
+                const container = document.getElementById('lojasContainer');
+                if (!lojas || lojas.length === 0) {
+                    container.innerHTML = '<div class="loading">Nenhuma loja cadastrada</div>';
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Nome</th><th>Subdomínio</th><th>E-mail</th><th>Telefone</th><th>Status</th><th>Plano</th><th>Criado em</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${lojas.map(loja => `
+                                <tr>
+                                    <td>${loja.id.substring(0,8)}...</td>
+                                    <td>${loja.name}</td>
+                                    <td>${loja.subdomain}</td>
+                                    <td>${loja.email}</td>
+                                    <td>${loja.phone}</td>
+                                    <td class="${loja.isActive ? 'status-active' : 'status-inactive'}">${loja.isActive ? 'Ativo' : 'Inativo'}</td>
+                                    <td>${loja.plan}</td>
+                                    <td>${new Date(loja.createdAt).toLocaleDateString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Erro ao carregar lojas:', error);
+                document.getElementById('lojasContainer').innerHTML = '<div class="error">Erro ao carregar lojas</div>';
+            }
+        }
+        
+        checkAuth();
+        loadStats();
+        loadLojas();
+    </script>
+</body>
+</html>

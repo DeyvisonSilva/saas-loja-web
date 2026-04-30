@@ -1,4 +1,4 @@
-﻿import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto, UpdateCategoryDto, CreateProductDto, UpdateProductDto } from './dto/cardapio.dto';
 import { Prisma } from '@prisma/client';
@@ -54,8 +54,6 @@ export class CardapioService {
         stock: data.stock || 0,
         minStock: data.minStock || 5,
         isAvailable: data.isAvailable ?? true,
-        availableFrom: data.availableFrom,
-        availableTo: data.availableTo,
         tenantId: data.tenantId,
         categoryId: data.categoryId,
       },
@@ -99,7 +97,6 @@ export class CardapioService {
   }
 
   async updateProduct(id: string, data: UpdateProductDto, tenantId: string) {
-    // Verificar se o produto existe
     await this.findProductById(id, tenantId);
     
     return this.prisma.product.update({
@@ -113,7 +110,23 @@ export class CardapioService {
   }
 
   async deleteProduct(id: string, tenantId: string) {
-    await this.findProductById(id, tenantId);
+    const product = await this.findProductById(id, tenantId);
+    
+    // Verificar se o produto tem pedidos associados
+    const orderItems = await this.prisma.orderItem.findMany({
+      where: { productId: id },
+      take: 1,
+    });
+    
+    if (orderItems.length > 0) {
+      // Se tem pedidos, apenas desativar o produto
+      return this.prisma.product.update({
+        where: { id },
+        data: { isAvailable: false, stock: 0 },
+      });
+    }
+    
+    // Se não tem pedidos, pode deletar
     return this.prisma.product.delete({ where: { id } });
   }
 
@@ -122,7 +135,7 @@ export class CardapioService {
     
     const newStock = product.stock + quantity;
     if (newStock < 0) {
-      throw new Error('Estoque insuficiente');
+      throw new BadRequestException('Estoque insuficiente');
     }
     
     return this.prisma.product.update({
@@ -134,7 +147,6 @@ export class CardapioService {
   // ==================== VARIAÇÕES ====================
   
   async addVariation(productId: string, name: string, options: string[], tenantId: string) {
-    // Verificar se o produto pertence ao tenant
     await this.findProductById(productId, tenantId);
     
     return this.prisma.variation.create({

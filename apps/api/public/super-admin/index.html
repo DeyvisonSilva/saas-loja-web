@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Super Admin Login</title>
+    <style>
+        body { font-family: Arial; background: #1f2937; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 10px; width: 350px; }
+        h1 { text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        button { width: 100%; padding: 10px; background: #dc2626; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .error { color: red; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Super Admin</h1>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="E-mail" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <div id="message" class="error"></div>
+    </div>
+    <script>
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('message');
+            try {
+                const res = await fetch('/super-admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('superAdminToken', data.token);
+                    window.location.href = '/super-admin/dashboard.html';
+                } else {
+                    msg.textContent = data.message || 'Erro';
+                }
+            } catch(err) {
+                msg.textContent = 'Erro de conexão';
+            }
+        };
+    </script>
+</body>
+</html>

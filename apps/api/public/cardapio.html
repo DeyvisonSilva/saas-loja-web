@@ -1,21 +1,21 @@
-<!DOCTYPE html>
+Ôªø<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card·pio Digital</title>
+    <title>Card√°pio Digital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f3f4f6; }
-        .header { background: white; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; }
+        .header { background: white; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 10; }
         .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .logo { color: #dc2626; font-size: 1.5rem; }
         .cart-btn { background: #dc2626; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; }
         .products { max-width: 1200px; margin: 20px auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 0 20px; }
         .product-card { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .product-name { font-size: 1.2rem; font-weight: bold; }
-        .product-price { color: #dc2626; font-size: 1.3rem; font-weight: bold; margin-top: 10px; }
-        .add-btn { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        .product-price { color: #dc2626; font-size: 1.3rem; font-weight: bold; margin: 10px 0; }
+        .add-btn { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; width: 100%; }
         .cart-modal { display: none; position: fixed; top: 0; right: 0; width: 100%; max-width: 450px; height: 100%; background: white; box-shadow: -2px 0 5px rgba(0,0,0,0.2); z-index: 1000; overflow-y: auto; }
         .cart-header { padding: 15px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; }
         .cart-items { padding: 15px; max-height: 40%; overflow-y: auto; }
@@ -30,22 +30,21 @@
         .card-fields { display: none; margin-top: 15px; padding: 15px; background: #f9fafb; border-radius: 8px; }
         .qr-code-container { text-align: center; padding: 20px; }
         .qr-code-image { max-width: 200px; margin: 10px auto; }
-        .boleto-link { word-break: break-all; color: #dc2626; text-decoration: none; }
-        .loading { text-align: center; padding: 50px; }
+        .loading { text-align: center; padding: 50px; color: #666; }
+        .payment-status { margin-top: 15px; }
         .success-message { background: #d1fae5; color: #065f46; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         .error-message { background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .payment-status { margin-top: 15px; }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <h1 class="logo">?? Card·pio Digital</h1>
-            <button class="cart-btn" onclick="openCart()">?? Carrinho (<span id="cartCount">0</span>)</button>
+            <h1 class="logo">üçî Card√°pio Digital</h1>
+            <button class="cart-btn" onclick="openCart()">üõí Carrinho (<span id="cartCount">0</span>)</button>
         </div>
     </div>
     <div id="productsContainer" class="products">
-        <div class="loading">Carregando card·pio...</div>
+        <div class="loading">Carregando card√°pio...</div>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeCart()"></div>
@@ -59,57 +58,32 @@
             <div style="margin-bottom:15px;"><strong>Total: R$ <span id="cartTotal">0.00</span></strong></div>
             <div><input type="text" id="customerName" placeholder="Seu nome" required></div>
             <div><input type="text" id="customerPhone" placeholder="WhatsApp com DDD" required></div>
-            <div>
-                <select id="deliveryType" onchange="toggleAddress()">
-                    <option value="pickup">Retirada no balc„o</option>
-                    <option value="delivery">Delivery</option>
-                </select>
-            </div>
-            <div id="addressField" style="display:none;"><input type="text" id="customerAddress" placeholder="EndereÁo completo"></div>
-            
+            <div><select id="deliveryType" onchange="toggleAddress()"><option value="pickup">Retirada no balc√£o</option><option value="delivery">Delivery</option></select></div>
+            <div id="addressField" style="display:none;"><input type="text" id="customerAddress" placeholder="Endere√ßo completo"></div>
             <div style="margin: 15px 0;"><strong>Forma de Pagamento</strong></div>
-            
             <div id="paymentOptions">
-                <div class="payment-option" onclick="selectPayment('pix')">
-                    <div><span class="payment-icon">??</span> Pix</div>
-                    <div style="font-size:0.8rem;color:#666;">Pagamento instant‚neo com QR Code</div>
-                </div>
-                <div class="payment-option" onclick="selectPayment('credit_card')">
-                    <div><span class="payment-icon">??</span> Cart„o de CrÈdito</div>
-                    <div style="font-size:0.8rem;color:#666;">Visa, Mastercard, Elo, American Express</div>
-                </div>
-                <div class="payment-option" onclick="selectPayment('boleto')">
-                    <div><span class="payment-icon">??</span> Boleto Banc·rio</div>
-                    <div style="font-size:0.8rem;color:#666;">Vencimento em 3 dias ˙teis</div>
-                </div>
+                <div class="payment-option" onclick="selectPayment('pix')"><div><span class="payment-icon">üì±</span> Pix (QR Code)</div></div>
+                <div class="payment-option" onclick="selectPayment('credit_card')"><div><span class="payment-icon">üí≥</span> Cart√£o de Cr√©dito</div></div>
+                <div class="payment-option" onclick="selectPayment('boleto')"><div><span class="payment-icon">üìÑ</span> Boleto Banc√°rio</div></div>
             </div>
-            
             <div id="cardFields" class="card-fields">
-                <input type="text" id="cardNumber" placeholder="N˙mero do cart„o">
-                <input type="text" id="cardHolder" placeholder="Nome no cart„o">
-                <div style="display:flex;gap:10px;">
-                    <input type="text" id="cardExpiry" placeholder="MM/AA" style="width:50%;">
-                    <input type="text" id="cardCvv" placeholder="CVV" style="width:50%;">
-                </div>
+                <input type="text" id="cardNumber" placeholder="N√∫mero do cart√£o">
+                <input type="text" id="cardHolder" placeholder="Nome no cart√£o">
+                <div style="display:flex;gap:10px;"><input type="text" id="cardExpiry" placeholder="MM/AA" style="width:50%;"><input type="text" id="cardCvv" placeholder="CVV" style="width:50%;"></div>
             </div>
-            
             <div id="paymentStatus" class="payment-status"></div>
             <button class="checkout-btn" onclick="submitOrder()">Confirmar Pedido</button>
         </div>
     </div>
 
-    <script>const API_URL = window.location.origin || 'https://saas-loja-web.onrender.com';
+    <script>
         let products = [];
         let cart = [];
         let tenantId = null;
         let selectedPayment = null;
-        let currentOrderId = null;
 
         const urlParams = new URLSearchParams(window.location.search);
         tenantId = urlParams.get('tenant');
-        if (!tenantId) {
-            tenantId = localStorage.getItem('tenantId');
-        }
 
         async function loadProducts() {
             try {
@@ -117,14 +91,14 @@
                 products = await res.json();
                 renderProducts();
             } catch (err) {
-                document.getElementById('productsContainer').innerHTML = '<div class="loading">Erro ao carregar card·pio</div>';
+                document.getElementById('productsContainer').innerHTML = '<div class="loading">Erro ao carregar</div>';
             }
         }
 
         function renderProducts() {
             const container = document.getElementById('productsContainer');
             if (!products || products.length === 0) {
-                container.innerHTML = '<div class="loading">Nenhum produto disponÌvel</div>';
+                container.innerHTML = '<div class="loading">Nenhum produto dispon√≠vel</div>';
                 return;
             }
             container.innerHTML = products.map(p => `
@@ -139,11 +113,8 @@
 
         function addToCart(id, name, price) {
             const existing = cart.find(i => i.id === id);
-            if (existing) {
-                existing.quantity++;
-            } else {
-                cart.push({ id, name, price, quantity: 1 });
-            }
+            if (existing) { existing.quantity++; } 
+            else { cart.push({ id, name, price, quantity: 1 }); }
             updateCartUI();
         }
 
@@ -152,197 +123,55 @@
             const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
             document.getElementById('cartCount').innerText = count;
             document.getElementById('cartTotal').innerText = total.toFixed(2);
-            
             const itemsDiv = document.getElementById('cartItems');
-            if (cart.length === 0) {
-                itemsDiv.innerHTML = '<div style="text-align:center;color:#999;">Carrinho vazio</div>';
-            } else {
-                itemsDiv.innerHTML = cart.map(item => `
-                    <div style="display:flex;justify-content:space-between;margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:5px;">
-                        <div>${item.name} x${item.quantity}</div>
-                        <div>R$ ${(item.price * item.quantity).toFixed(2)}</div>
-                    </div>
-                `).join('');
-            }
+            if (cart.length === 0) { itemsDiv.innerHTML = '<div style="text-align:center;color:#999;">Carrinho vazio</div>'; return; }
+            itemsDiv.innerHTML = cart.map(item => `<div style="display:flex;justify-content:space-between;margin-bottom:10px;">${item.name} x${item.quantity}<div>R$ ${(item.price * item.quantity).toFixed(2)}</div></div>`).join('');
         }
 
-        function openCart() {
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('cartModal').style.display = 'block';
-            resetPaymentSelection();
-        }
-
-        function closeCart() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('cartModal').style.display = 'none';
-        }
-
-        function toggleAddress() {
-            const show = document.getElementById('deliveryType').value === 'delivery';
-            document.getElementById('addressField').style.display = show ? 'block' : 'none';
-        }
-
-        function selectPayment(payment) {
-            selectedPayment = payment;
-            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
-            event.target.closest('.payment-option').classList.add('selected');
-            
-            const cardFields = document.getElementById('cardFields');
-            cardFields.style.display = (payment === 'credit_card') ? 'block' : 'none';
-            
-            document.getElementById('paymentStatus').innerHTML = '';
-        }
-
-        function resetPaymentSelection() {
-            selectedPayment = null;
-            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
-            document.getElementById('cardFields').style.display = 'none';
-            document.getElementById('paymentStatus').innerHTML = '';
-        }
+        function openCart() { document.getElementById('overlay').style.display = 'block'; document.getElementById('cartModal').style.display = 'block'; }
+        function closeCart() { document.getElementById('overlay').style.display = 'none'; document.getElementById('cartModal').style.display = 'none'; resetPaymentSelection(); }
+        function toggleAddress() { document.getElementById('addressField').style.display = document.getElementById('deliveryType').value === 'delivery' ? 'block' : 'none'; }
+        function selectPayment(payment) { selectedPayment = payment; document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected')); event.target.closest('.payment-option').classList.add('selected'); document.getElementById('cardFields').style.display = payment === 'credit_card' ? 'block' : 'none'; }
+        function resetPaymentSelection() { selectedPayment = null; document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected')); document.getElementById('cardFields').style.display = 'none'; document.getElementById('paymentStatus').innerHTML = ''; }
 
         async function submitOrder() {
             const name = document.getElementById('customerName').value;
             const phone = document.getElementById('customerPhone').value;
             const deliveryType = document.getElementById('deliveryType').value;
             const address = document.getElementById('customerAddress').value;
+            if (!name || !phone) { alert('Preencha nome e telefone'); return; }
+            if (deliveryType === 'delivery' && !address) { alert('Preencha o endere√ßo'); return; }
+            if (!selectedPayment) { alert('Selecione pagamento'); return; }
             
-            if (!name || !phone) {
-                alert('Preencha seu nome e telefone');
-                return;
-            }
-            
-            if (deliveryType === 'delivery' && !address) {
-                alert('Preencha o endereÁo para entrega');
-                return;
-            }
-            
-            if (!selectedPayment) {
-                alert('Selecione uma forma de pagamento');
-                return;
-            }
-            
-            const orderData = {
-                customerName: name,
-                customerPhone: phone,
-                deliveryType: deliveryType,
-                deliveryFee: 0,
-                items: cart.map(item => ({
-                    productId: item.id,
-                    quantity: item.quantity
-                })),
-                tenantId: tenantId
-            };
-            
-            if (deliveryType === 'delivery') {
-                orderData.customerAddress = address;
-            }
+            const orderData = { customerName: name, customerPhone: phone, deliveryType: deliveryType, deliveryFee: 0, items: cart.map(item => ({ productId: item.id, quantity: item.quantity })), tenantId: tenantId };
+            if (deliveryType === 'delivery') orderData.customerAddress = address;
             
             const statusDiv = document.getElementById('paymentStatus');
-            statusDiv.innerHTML = '<div class="loading">Processando pedido...</div>';
+            statusDiv.innerHTML = '<div class="loading">Processando...</div>';
             
             try {
-                // Criar pedido
-                const orderRes = await fetch('/pedidos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
-                });
+                const orderRes = await fetch('/pedidos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
                 const order = await orderRes.json();
+                if (!orderRes.ok) { statusDiv.innerHTML = `<div class="error-message">Erro: ${order.message}</div>`; return; }
                 
-                if (!orderRes.ok) {
-                    statusDiv.innerHTML = `<div class="error-message">Erro: ${order.message}</div>`;
-                    return;
-                }
-                
-                currentOrderId = order.id;
-                
-                // Processar pagamento
                 if (selectedPayment === 'pix') {
                     const pixRes = await fetch(`/pagamentos/pix/${order.id}?tenantId=${tenantId}`, { method: 'POST' });
                     const pix = await pixRes.json();
-                    
-                    if (pixRes.ok) {
-                        statusDiv.innerHTML = `
-                            <div class="qr-code-container">
-                                <h4>Pagar com PIX</h4>
-                                <img src="${pix.qrCodeImage}" class="qr-code-image">
-                                <p>Valor: R$ ${pix.value.toFixed(2)}</p>
-                                <p>Escaneie o QR Code no seu banco</p>
-                                <p style="font-size:0.8rem;color:#666;">QR Code v·lido por 1 hora</p>
-                            </div>
-                        `;
-                        cart = [];
-                        updateCartUI();
-                    } else {
-                        statusDiv.innerHTML = `<div class="error-message">Erro ao gerar PIX</div>`;
-                    }
-                    
+                    statusDiv.innerHTML = `<div class="qr-code-container"><h4>Pagar com PIX</h4><img src="${pix.qrCodeImage}" class="qr-code-image"><p>Valor: R$ ${pix.value.toFixed(2)}</p><p>Escaneie o QR Code no seu banco</p><button onclick="closeCart()" class="checkout-btn">Fechar</button></div>`;
+                    cart = []; updateCartUI();
                 } else if (selectedPayment === 'boleto') {
                     const boletoRes = await fetch(`/pagamentos/boleto/${order.id}?tenantId=${tenantId}`, { method: 'POST' });
                     const boleto = await boletoRes.json();
-                    
-                    if (boletoRes.ok) {
-                        statusDiv.innerHTML = `
-                            <div class="success-message">
-                                <h4>Boleto gerado!</h4>
-                                <p>Valor: R$ ${boleto.value.toFixed(2)}</p>
-                                <p>Vencimento: ${new Date(boleto.dueDate).toLocaleDateString()}</p>
-                                <a href="${boleto.boletoUrl}" target="_blank" class="boleto-link">Visualizar Boleto</a><br>
-                                <a href="${boleto.boletoPdf}" target="_blank" class="boleto-link">Baixar PDF</a>
-                            </div>
-                        `;
-                        cart = [];
-                        updateCartUI();
-                    } else {
-                        statusDiv.innerHTML = `<div class="error-message">Erro ao gerar boleto</div>`;
-                    }
-                    
+                    statusDiv.innerHTML = `<div class="success-message"><h4>Boleto gerado!</h4><p>Valor: R$ ${boleto.value.toFixed(2)}</p><a href="${boleto.boletoUrl}" target="_blank">Visualizar Boleto</a><br><button onclick="closeCart()" class="checkout-btn">Fechar</button></div>`;
+                    cart = []; updateCartUI();
                 } else if (selectedPayment === 'credit_card') {
-                    const cardNumber = document.getElementById('cardNumber').value;
-                    const cardHolder = document.getElementById('cardHolder').value;
-                    const cardExpiry = document.getElementById('cardExpiry').value;
-                    const cardCvv = document.getElementById('cardCvv').value;
-                    
-                    if (!cardNumber || !cardHolder || !cardExpiry || !cardCvv) {
-                        statusDiv.innerHTML = `<div class="error-message">Preencha todos os dados do cart„o</div>`;
-                        return;
-                    }
-                    
-                    const cardData = {
-                        cardNumber: cardNumber.replace(/\s/g, ''),
-                        cardHolder: cardHolder,
-                        expiryMonth: parseInt(cardExpiry.split('/')[0]),
-                        expiryYear: parseInt('20' + cardExpiry.split('/')[1]),
-                        cvv: cardCvv
-                    };
-                    
-                    const cardRes = await fetch(`/pagamentos/cartao/${order.id}?tenantId=${tenantId}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(cardData)
-                    });
+                    const cardData = { cardNumber: document.getElementById('cardNumber').value.replace(/\s/g, ''), cardHolder: document.getElementById('cardHolder').value, expiryMonth: parseInt(document.getElementById('cardExpiry').value.split('/')[0]), expiryYear: parseInt('20' + document.getElementById('cardExpiry').value.split('/')[1]), cvv: document.getElementById('cardCvv').value };
+                    const cardRes = await fetch(`/pagamentos/cartao/${order.id}?tenantId=${tenantId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cardData) });
                     const cartao = await cardRes.json();
-                    
-                    if (cartao.success) {
-                        statusDiv.innerHTML = `
-                            <div class="success-message">
-                                <h4>? Pagamento aprovado!</h4>
-                                <p>Pedido #${order.id.substring(0,8)} confirmado!</p>
-                                <p>Valor: R$ ${cartao.value.toFixed(2)}</p>
-                                <p>Em breve vocÍ receber· a confirmaÁ„o.</p>
-                            </div>
-                        `;
-                        cart = [];
-                        updateCartUI();
-                        setTimeout(() => closeCart(), 3000);
-                    } else {
-                        statusDiv.innerHTML = `<div class="error-message">? Pagamento recusado. ${cartao.message || 'Tente outro cart„o'}</div>`;
-                    }
+                    if (cartao.success) { statusDiv.innerHTML = `<div class="success-message"><h4>‚úÖ Pagamento aprovado!</h4><p>Pedido confirmado!</p><button onclick="closeCart()" class="checkout-btn">Fechar</button></div>`; cart = []; updateCartUI(); }
+                    else { statusDiv.innerHTML = `<div class="error-message">‚ùå ${cartao.message || 'Pagamento recusado'}</div>`; }
                 }
-                
-            } catch (err) {
-                statusDiv.innerHTML = `<div class="error-message">Erro ao processar pedido: ${err.message}</div>`;
-            }
+            } catch (err) { statusDiv.innerHTML = `<div class="error-message">Erro: ${err.message}</div>`; }
         }
 
         loadProducts();

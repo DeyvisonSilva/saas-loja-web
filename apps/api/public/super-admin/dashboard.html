@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Plataforma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
+        
+        /* Header */
+        .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { background: rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .logout-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .logout-btn:hover { background: #dc2626; }
+        
+        /* Layout */
+        .dashboard { display: flex; min-height: calc(100vh - 72px); }
+        .sidebar { width: 280px; background: white; border-right: 1px solid #e5e7eb; padding: 2rem 0; }
+        .nav-item { padding: 12px 24px; margin: 4px 12px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #4b5563; transition: all 0.3s; }
+        .nav-item i { width: 24px; font-size: 1.2rem; }
+        .nav-item:hover { background: #f3f4f6; color: #dc2626; }
+        .nav-item.active { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+        .content { flex: 1; padding: 2rem; overflow-x: auto; }
+        
+        /* Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-4px); }
+        .stat-card h3 { font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem; }
+        .stat-card .value { font-size: 2rem; font-weight: bold; color: #1f2937; }
+        .stat-card .trend { font-size: 0.75rem; color: #10b981; margin-top: 0.5rem; }
+        
+        /* Tabelas */
+        .table-container { background: white; border-radius: 20px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { font-weight: 600; color: #4b5563; background: #f9fafb; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .badge-active { background: #d1fae5; color: #059669; }
+        .badge-inactive { background: #fee2e2; color: #dc2626; }
+        
+        /* Botões */
+        .btn { padding: 8px 16px; border-radius: 10px; border: none; cursor: pointer; font-weight: 500; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+        .btn-outline { background: transparent; border: 1px solid #e5e7eb; }
+        .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><div class="logo-icon">🏪</div><div><h2>Super Admin</h2><small>Plataforma de Lojas</small></div></div>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    </div>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div>
+            <div class="nav-item" onclick="showSection('lojas')"><i class="fas fa-store"></i> Lojas</div>
+            <div class="nav-item" onclick="showSection('pedidos')"><i class="fas fa-shopping-bag"></i> Pedidos</div>
+        </div>
+        <div class="content">
+            <div id="dashboardSection">
+                <div class="stats-grid" id="statsGrid"></div>
+                <div class="table-container"><h3 style="margin-bottom:1rem;">📋 Últimas Lojas</h3><div id="ultimasLojas"></div></div>
+            </div>
+            <div id="lojasSection" class="hidden"><div class="table-container"><div id="lojasList"></div></div></div>
+            <div id="pedidosSection" class="hidden"><div class="table-container"><div id="pedidosList"></div></div></div>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('superAdminToken');
+        if (!token) window.location.href = '/super-admin/';
+
+        async function api(url, options = {}) {
+            const res = await fetch(url, { ...options, headers: { 'Authorization': 'Bearer ' + token, ...options.headers } });
+            return res.json();
+        }
+
+        async function loadDashboard() {
+            const stats = await api('/super-admin/stats');
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card"><h3><i class="fas fa-store"></i> Total Lojas</h3><div class="value">${stats.lojas || 0}</div></div>
+                <div class="stat-card"><h3><i class="fas fa-box"></i> Produtos</h3><div class="value">${stats.produtos || 0}</div></div>
+                <div class="stat-card"><h3><i class="fas fa-shopping-cart"></i> Pedidos</h3><div class="value">${stats.pedidos || 0}</div></div>
+                <div class="stat-card"><h3><i class="fas fa-dollar-sign"></i> Faturamento</h3><div class="value">R$ ${(stats.faturamento || 0).toFixed(2)}</div></div>
+            `;
+            const lojas = await api('/super-admin/lojas');
+            document.getElementById('ultimasLojas').innerHTML = `
+                <table><thead><tr><th>Loja</th><th>E-mail</th><th>Status</th><th>Planos</th></tr></thead>
+                <tbody>${lojas.slice(0,5).map(l => `<tr><td><strong>${l.name}</strong><br><small>${l.subdomain}</small></td><td>${l.email}</td><td><span class="badge ${l.isActive ? 'badge-active' : 'badge-inactive'}">${l.isActive ? 'Ativo' : 'Inativo'}</span></td><td>${l.plan}</td></tr>`).join('')}</tbody></table>
+            `;
+        }
+
+        async function loadLojas() {
+            const lojas = await api('/super-admin/lojas');
+            document.getElementById('lojasList').innerHTML = `
+                <table><thead><tr><th>ID</th><th>Loja</th><th>E-mail</th><th>Subdomínio</th><th>Status</th><th>Plano</th></tr></thead>
+                <tbody>${lojas.map(l => `<tr><td><small>${l.id.substring(0,8)}</small></td><td><strong>${l.name}</strong></td><td>${l.email}</td><td>${l.subdomain}</td><td><span class="badge ${l.isActive ? 'badge-active' : 'badge-inactive'}">${l.isActive ? 'Ativo' : 'Inativo'}</span></td><td>${l.plan}</td></tr>`).join('')}</tbody></table>
+            `;
+        }
+
+        async function loadPedidos() {
+            const pedidos = await api('/super-admin/pedidos');
+            const statusMap = { pending:'Pendente', paid:'Pago', preparing:'Preparando', ready:'Pronto', delivered:'Entregue' };
+            document.getElementById('pedidosList').innerHTML = `
+                <table><thead><tr><th>ID</th><th>Loja</th><th>Cliente</th><th>Total</th><th>Status</th><th>Data</th></tr></thead>
+                <tbody>${pedidos.map(p => `<tr><td><small>${p.id.substring(0,8)}</small></td><td>${p.tenant?.name || '-'}</td><td>${p.customerName}</td><td>R$ ${p.total}</td><td><span class="badge">${statusMap[p.status]}</span></td><td>${new Date(p.createdAt).toLocaleDateString()}</td></tr>`).join('')}</tbody></table>
+            `;
+        }
+
+        function showSection(section) {
+            document.querySelectorAll('.content > div').forEach(d => d.classList.add('hidden'));
+            document.getElementById(`${section}Section`).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+            if (section === 'dashboard') loadDashboard();
+            if (section === 'lojas') loadLojas();
+            if (section === 'pedidos') loadPedidos();
+        }
+
+        function logout() { localStorage.clear(); window.location.href = '/super-admin/'; }
+        loadDashboard();
+    </script>
+</body>
+</html>

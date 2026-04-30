@@ -1,5 +1,5 @@
-﻿{
-  "name": "plataforma-loja",
+{
+  "name": "loja-plataforma",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
@@ -8,8 +8,8 @@
   ],
   "scripts": {
     "dev:api": "npm run dev --workspace=api",
-    "dev:loja": "npm run dev --workspace=web-loja",
     "dev:admin": "npm run dev --workspace=web-admin",
+    "dev:loja": "npm run dev --workspace=web-loja",
     "build:all": "npm run build --workspaces",
     "db:generate": "npm run db:generate --workspace=api",
     "db:migrate": "npm run db:migrate --workspace=api"

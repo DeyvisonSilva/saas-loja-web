@@ -4,6 +4,7 @@ CREATE TABLE "Tenant" (
     "name" TEXT NOT NULL,
     "subdomain" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "cnpj" TEXT,
     "asaasAccountId" TEXT,
@@ -37,8 +38,6 @@ CREATE TABLE "Product" (
     "stock" INTEGER NOT NULL DEFAULT 0,
     "minStock" INTEGER NOT NULL DEFAULT 5,
     "isAvailable" BOOLEAN NOT NULL DEFAULT true,
-    "availableFrom" TEXT,
-    "availableTo" TEXT,
     "tenantId" TEXT NOT NULL,
     "categoryId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -104,6 +103,19 @@ CREATE TABLE "StockMovement" (
     CONSTRAINT "StockMovement_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "SuperAdmin" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "role" TEXT NOT NULL DEFAULT 'super_admin',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SuperAdmin_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Tenant_subdomain_key" ON "Tenant"("subdomain");
 
@@ -112,6 +124,9 @@ CREATE UNIQUE INDEX "Tenant_email_key" ON "Tenant"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_tenantId_name_key" ON "Category"("tenantId", "name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SuperAdmin_email_key" ON "SuperAdmin"("email");
 
 -- AddForeignKey
 ALTER TABLE "Category" ADD CONSTRAINT "Category_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -8,7 +8,8 @@ import { CardapioModule } from './cardapio/cardapio.module';
 import { PedidosModule } from './pedidos/pedidos.module';
 import { PagamentosModule } from './pagamentos/pagamentos.module';
 import { AuthModule } from './auth/auth.module';
-import { AsaasRealModule } from './asaas/asaas-real.module';
+import { SuperAdminModule } from './super-admin/super-admin.module';
+import { UploadModule } from './upload/upload.module';
 import { PrismaService } from './prisma/prisma.service';
 
 @Module({
@@ -27,7 +28,8 @@ import { PrismaService } from './prisma/prisma.service';
     PedidosModule,
     PagamentosModule,
     AuthModule,
-    AsaasRealModule,
+    SuperAdminModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [PrismaService],

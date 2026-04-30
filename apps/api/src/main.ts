@@ -1,15 +1,22 @@
-import { NestFactory } from '@nestjs/core';
+﻿import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // Habilitar CORS para aceitar requisições do frontend
+  // Aumentar limite de tamanho para upload de imagens (50MB)
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
+  
+  // Habilitar CORS
   app.enableCors();
   
-  // Porta que o servidor vai rodar
-  const port = process.env.PORT || 3000;
+  // Validação global
+  app.useGlobalPipes(new ValidationPipe());
   
+  const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`🚀 API rodando em http://localhost:${port}`);
 }

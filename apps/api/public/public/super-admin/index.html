@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container { width: 100%; max-width: 400px; padding: 20px; }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { text-align: center; color: #1f2937; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #6b7280; margin-bottom: 30px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover { background: #b91c1c; }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .error { background: #fee2e2; color: #991b1b; display: block; }
+        .success { background: #d1fae5; color: #065f46; display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔐 Super Admin</h1>
+            <p class="subtitle">Acesso restrito ao administrador</p>
+            
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="E-mail" required>
+                <input type="password" id="password" placeholder="Senha" required>
+                <button type="submit">Entrar</button>
+            </form>
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "";
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const msgDiv = document.getElementById('message');
+            msgDiv.className = 'message';
+            msgDiv.textContent = 'Autenticando...';
+            
+            const data = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/super-admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('superAdminToken', result.token);
+                    localStorage.setItem('superAdmin', JSON.stringify(result.admin));
+                    msgDiv.className = 'message success';
+                    msgDiv.textContent = 'Login realizado! Redirecionando...';
+                    setTimeout(() => {
+                        window.location.href = '/super-admin/dashboard.html';
+                    }, 1500);
+                } else {
+                    msgDiv.className = 'message error';
+                    msgDiv.textContent = result.message || 'Erro ao fazer login';
+                }
+            } catch (error) {
+                msgDiv.className = 'message error';
+                msgDiv.textContent = 'Erro de conexão: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
