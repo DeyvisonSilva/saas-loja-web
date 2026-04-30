@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -43,7 +43,7 @@
         .badge-active { background: #d1fae5; color: #059669; }
         .badge-inactive { background: #fee2e2; color: #dc2626; }
         
-        /* Botões */
+        /* Bot�es */
         .btn { padding: 8px 16px; border-radius: 10px; border: none; cursor: pointer; font-weight: 500; transition: all 0.3s; }
         .btn-primary { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
         .btn-outline { background: transparent; border: 1px solid #e5e7eb; }
@@ -54,7 +54,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo"><div class="logo-icon">🏪</div><div><h2>Super Admin</h2><small>Plataforma de Lojas</small></div></div>
+        <div class="logo"><div class="logo-icon">??</div><div><h2>Super Admin</h2><small>Plataforma de Lojas</small></div></div>
         <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</button>
     </div>
     <div class="dashboard">
@@ -66,7 +66,7 @@
         <div class="content">
             <div id="dashboardSection">
                 <div class="stats-grid" id="statsGrid"></div>
-                <div class="table-container"><h3 style="margin-bottom:1rem;">📋 Últimas Lojas</h3><div id="ultimasLojas"></div></div>
+                <div class="table-container"><h3 style="margin-bottom:1rem;">?? �ltimas Lojas</h3><div id="ultimasLojas"></div></div>
             </div>
             <div id="lojasSection" class="hidden"><div class="table-container"><div id="lojasList"></div></div></div>
             <div id="pedidosSection" class="hidden"><div class="table-container"><div id="pedidosList"></div></div></div>
@@ -100,7 +100,7 @@
         async function loadLojas() {
             const lojas = await api('/super-admin/lojas');
             document.getElementById('lojasList').innerHTML = `
-                <table><thead><tr><th>ID</th><th>Loja</th><th>E-mail</th><th>Subdomínio</th><th>Status</th><th>Plano</th></tr></thead>
+                <table><thead><tr><th>ID</th><th>Loja</th><th>E-mail</th><th>Subdom�nio</th><th>Status</th><th>Plano</th></tr></thead>
                 <tbody>${lojas.map(l => `<tr><td><small>${l.id.substring(0,8)}</small></td><td><strong>${l.name}</strong></td><td>${l.email}</td><td>${l.subdomain}</td><td><span class="badge ${l.isActive ? 'badge-active' : 'badge-inactive'}">${l.isActive ? 'Ativo' : 'Inativo'}</span></td><td>${l.plan}</td></tr>`).join('')}</tbody></table>
             `;
         }
