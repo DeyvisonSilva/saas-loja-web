@@ -1,9 +1,9 @@
-Ôªø<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card√°pio Digital</title>
+    <title>Card·pio Digital</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f3f4f6; }
@@ -40,12 +40,12 @@
 <body>
     <div class="header">
         <div class="header-content">
-            <h1 class="logo">üçî Card√°pio Digital</h1>
-            <button class="cart-btn" onclick="openCart()">üõí Carrinho (<span id="cartCount">0</span>)</button>
+            <h1 class="logo">?? Card·pio Digital</h1>
+            <button class="cart-btn" onclick="openCart()">?? Carrinho (<span id="cartCount">0</span>)</button>
         </div>
     </div>
     <div id="productsContainer" class="products">
-        <div class="loading">Carregando card√°pio...</div>
+        <div class="loading">Carregando card·pio...</div>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeCart()"></div>
@@ -61,32 +61,32 @@
             <div><input type="text" id="customerPhone" placeholder="WhatsApp com DDD" required></div>
             <div>
                 <select id="deliveryType" onchange="toggleAddress()">
-                    <option value="pickup">Retirada no balc√£o</option>
+                    <option value="pickup">Retirada no balc„o</option>
                     <option value="delivery">Delivery</option>
                 </select>
             </div>
-            <div id="addressField" style="display:none;"><input type="text" id="customerAddress" placeholder="Endere√ßo completo"></div>
+            <div id="addressField" style="display:none;"><input type="text" id="customerAddress" placeholder="EndereÁo completo"></div>
             
             <div style="margin: 15px 0;"><strong>Forma de Pagamento</strong></div>
             
             <div id="paymentOptions">
                 <div class="payment-option" onclick="selectPayment('pix')">
-                    <div><span class="payment-icon">üì±</span> Pix</div>
-                    <div style="font-size:0.8rem;color:#666;">Pagamento instant√¢neo com QR Code</div>
+                    <div><span class="payment-icon">??</span> Pix</div>
+                    <div style="font-size:0.8rem;color:#666;">Pagamento instant‚neo com QR Code</div>
                 </div>
                 <div class="payment-option" onclick="selectPayment('credit_card')">
-                    <div><span class="payment-icon">üí≥</span> Cart√£o de Cr√©dito</div>
+                    <div><span class="payment-icon">??</span> Cart„o de CrÈdito</div>
                     <div style="font-size:0.8rem;color:#666;">Visa, Mastercard, Elo, American Express</div>
                 </div>
                 <div class="payment-option" onclick="selectPayment('boleto')">
-                    <div><span class="payment-icon">üìÑ</span> Boleto Banc√°rio</div>
-                    <div style="font-size:0.8rem;color:#666;">Vencimento em 3 dias √∫teis</div>
+                    <div><span class="payment-icon">??</span> Boleto Banc·rio</div>
+                    <div style="font-size:0.8rem;color:#666;">Vencimento em 3 dias ˙teis</div>
                 </div>
             </div>
             
             <div id="cardFields" class="card-fields">
-                <input type="text" id="cardNumber" placeholder="N√∫mero do cart√£o">
-                <input type="text" id="cardHolder" placeholder="Nome no cart√£o">
+                <input type="text" id="cardNumber" placeholder="N˙mero do cart„o">
+                <input type="text" id="cardHolder" placeholder="Nome no cart„o">
                 <div style="display:flex;gap:10px;">
                     <input type="text" id="cardExpiry" placeholder="MM/AA" style="width:50%;">
                     <input type="text" id="cardCvv" placeholder="CVV" style="width:50%;">
@@ -98,7 +98,7 @@
         </div>
     </div>
 
-    <script>
+    <script>const API_URL = window.location.origin || 'https://saas-loja-web.onrender.com';
         let products = [];
         let cart = [];
         let tenantId = null;
@@ -117,14 +117,14 @@
                 products = await res.json();
                 renderProducts();
             } catch (err) {
-                document.getElementById('productsContainer').innerHTML = '<div class="loading">Erro ao carregar card√°pio</div>';
+                document.getElementById('productsContainer').innerHTML = '<div class="loading">Erro ao carregar card·pio</div>';
             }
         }
 
         function renderProducts() {
             const container = document.getElementById('productsContainer');
             if (!products || products.length === 0) {
-                container.innerHTML = '<div class="loading">Nenhum produto dispon√≠vel</div>';
+                container.innerHTML = '<div class="loading">Nenhum produto disponÌvel</div>';
                 return;
             }
             container.innerHTML = products.map(p => `
@@ -212,7 +212,7 @@
             }
             
             if (deliveryType === 'delivery' && !address) {
-                alert('Preencha o endere√ßo para entrega');
+                alert('Preencha o endereÁo para entrega');
                 return;
             }
             
@@ -268,7 +268,7 @@
                                 <img src="${pix.qrCodeImage}" class="qr-code-image">
                                 <p>Valor: R$ ${pix.value.toFixed(2)}</p>
                                 <p>Escaneie o QR Code no seu banco</p>
-                                <p style="font-size:0.8rem;color:#666;">QR Code v√°lido por 1 hora</p>
+                                <p style="font-size:0.8rem;color:#666;">QR Code v·lido por 1 hora</p>
                             </div>
                         `;
                         cart = [];
@@ -304,7 +304,7 @@
                     const cardCvv = document.getElementById('cardCvv').value;
                     
                     if (!cardNumber || !cardHolder || !cardExpiry || !cardCvv) {
-                        statusDiv.innerHTML = `<div class="error-message">Preencha todos os dados do cart√£o</div>`;
+                        statusDiv.innerHTML = `<div class="error-message">Preencha todos os dados do cart„o</div>`;
                         return;
                     }
                     
@@ -326,17 +326,17 @@
                     if (cartao.success) {
                         statusDiv.innerHTML = `
                             <div class="success-message">
-                                <h4>‚úÖ Pagamento aprovado!</h4>
+                                <h4>? Pagamento aprovado!</h4>
                                 <p>Pedido #${order.id.substring(0,8)} confirmado!</p>
                                 <p>Valor: R$ ${cartao.value.toFixed(2)}</p>
-                                <p>Em breve voc√™ receber√° a confirma√ß√£o.</p>
+                                <p>Em breve vocÍ receber· a confirmaÁ„o.</p>
                             </div>
                         `;
                         cart = [];
                         updateCartUI();
                         setTimeout(() => closeCart(), 3000);
                     } else {
-                        statusDiv.innerHTML = `<div class="error-message">‚ùå Pagamento recusado. ${cartao.message || 'Tente outro cart√£o'}</div>`;
+                        statusDiv.innerHTML = `<div class="error-message">? Pagamento recusado. ${cartao.message || 'Tente outro cart„o'}</div>`;
                     }
                 }
                 
